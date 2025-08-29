@@ -1,2 +1,1 @@
-hello
-aaa
+Solving the CS50's "Web Programming with Python and JavaScript" course's Problem Sets.
