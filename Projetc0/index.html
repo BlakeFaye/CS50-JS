@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Search</title>
+        <style>
+            .contents{
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                margin:0 auto;
+            }
+            .title{
+                font-size: 50px;
+                font-family: sans-serif;
+                margin-top: 12%;
+            }
+            .search_bar {
+                border-radius: 22px;
+                margin-bottom: 20px;
+                width: 550px;
+                height: 40px;
+                font-size: 20px;
+                margin: 0 auto; 
+                margin-top: 10px;
+            }
+            .search_button{
+                border-radius: 15px;
+                margin-top: 2%;
+            }
+            .nav {
+                text-align: right;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="contents">
+            <div class="nav">
+                <a href="image.html">Google Image Search</a>
+                <a href="advanced.html">Advanced Image Search</a>
+            </div>
+            <div class="title">
+                Regular Google
+            </div>
+            <div class="search_bar">
+                <form action="https://www.google.com/search">
+                    <input type="text" name="q" class = "search_bar">
+            </div>
+            <div class = "search_button">
+                <input type="submit" value="Google Search">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
