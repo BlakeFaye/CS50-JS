@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import Http404
 
 from . import util
 
@@ -10,6 +10,7 @@ def index(request):
         "entries": util.list_entries()
     })
 
+#page de test
 def CSS(request):
     return render(request, "encyclopedia/CSS.html", {
         "css_content": md.markdown(util.get_entry("CSS"))
@@ -18,11 +19,23 @@ def CSS(request):
 def wiki(request):
     return render(request, "encyclopedia/wiki.html")
 
-
 def content(request, title):
-        return render(request, "encyclopedia/content.html", {
-            "html_content": md.markdown(util.get_entry(title))
-        })
+        try:
+            return render(request, "encyclopedia/content.html", {
+                "html_content": md.markdown(util.get_entry(title))
+            })
+        except(AttributeError):
+             raise Http404("Page not found.")
 
-def fourofour(request, exception=None):
-    return render(request, "encyclopedia/fourofour.html")
+def custom_404_view(request, exception):
+    return render(request, 'encyclopedia/404.html', status=404)
+
+def search_result(request):
+    user_search = request.GET.get('q')
+    if util.get_entry(user_search):
+         return content(request, user_search)
+    else:
+        return render(request, "encyclopedia/search_result.html", {
+            "user_search": user_search
+            #"searched_entries": util.search_entry()
+        })

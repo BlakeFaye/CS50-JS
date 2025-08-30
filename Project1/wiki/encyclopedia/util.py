@@ -3,7 +3,6 @@ import re
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
-import markdown as md
 
 def list_entries():
     """
@@ -37,5 +36,8 @@ def get_entry(title):
     except FileNotFoundError:
         return None
 
-def convert_md_to_html(content):
-    return(md.markdown(content))
+def search_entry(query):
+    """
+    Return list of entries that contain the query in the title.
+    """
+    print (list_entries)
