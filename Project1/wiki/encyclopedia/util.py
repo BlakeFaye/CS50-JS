@@ -36,8 +36,17 @@ def get_entry(title):
     except FileNotFoundError:
         return None
 
-def search_entry(query):
+def search_results(search):
     """
     Return list of entries that contain the query in the title.
     """
-    print (list_entries)
+    _, filenames = default_storage.listdir("entries")
+
+    #Faire la liste des items dans la liste des pages qui contiennent le string recherché
+    result = []
+    for filename in filenames:
+        if search in filename:
+            result.append(filename)
+
+    return list(sorted(re.sub(r"\.md$", "", filename)
+            for filename in result if filename.endswith(".md")))

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import Http404
+from django.shortcuts import redirect
 
 from . import util
 
@@ -33,9 +34,9 @@ def custom_404_view(request, exception):
 def search_result(request):
     user_search = request.GET.get('q')
     if util.get_entry(user_search):
-         return content(request, user_search)
+         return redirect(content, title=user_search)
     else:
         return render(request, "encyclopedia/search_result.html", {
-            "user_search": user_search
-            #"searched_entries": util.search_entry()
+            "user_search": user_search,
+            "results": util.search_results(user_search)
         })

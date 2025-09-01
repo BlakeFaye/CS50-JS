@@ -8,6 +8,12 @@
     <h1>Recherche</h1>
     <p>
         Résultat de la recherche pour "{{user_search|safe}}" :
+         <ul>
+            {% for result in results %}
+                <li><a href="{{ object.get_absolute_url }}/wiki/{{ result }}">{{ result }} </a></li>
+                
+            {% endfor %}
+        </ul>
     </p>
 
 {% endblock %}
