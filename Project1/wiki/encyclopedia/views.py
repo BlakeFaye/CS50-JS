@@ -40,3 +40,6 @@ def search_result(request):
             "user_search": user_search,
             "results": util.search_results(user_search)
         })
+    
+def new_page(request):
+    return render(request, "encyclopedia/new_page.html")

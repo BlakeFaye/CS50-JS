@@ -29,10 +29,43 @@ textarea {
 
 .sidebar {
     background-color: #f0f0f0;
-    height: 100vh;
+    height: 98vh;
     padding: 20px;
 }
 
 .sidebar h2 {
     margin-top: 5px;
+}
+
+.title {
+    width: 90%;
+    font-size: 15px;
+    line-height: 15px;
+    margin-top: -1px;
+    margin-bottom: 30px;
+}
+
+.textarea {
+    width: 90%;
+    height: 90%;
+    font-size: 15px;
+    line-height: 15px;
+    resize: vertical; 
+    max-height: 70%;
+    margin-top: 13px;
+}
+
+.button {
+  transition-duration: 0.2s;
+  background-color: #f0f0f0;
+  color: black;
+  border: 2px solid black; 
+  margin-left:81%;
+  margin-top:10px;
+  
+}
+
+.button:hover {
+  background-color: black;
+  color: white;
 }

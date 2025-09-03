@@ -41,7 +41,6 @@ def search_results(search):
     Return list of entries that contain the query in the title.
     """
     _, filenames = default_storage.listdir("entries")
-
     #Faire la liste des items dans la liste des pages qui contiennent le string recherché
     result = []
     for filename in filenames:
@@ -50,3 +49,6 @@ def search_results(search):
 
     return list(sorted(re.sub(r"\.md$", "", filename)
             for filename in result if filename.endswith(".md")))
+
+def create_new_page(title,content):
+    return ()
