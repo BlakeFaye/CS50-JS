@@ -7,6 +7,7 @@
 {% block body %}
     <p>
         {{html_content|safe}}
+        <a href="{{ object.get_absolute_url }}/edit_page/{{ title }}">Edit this page </a>
     </p>
 
 {% endblock %}

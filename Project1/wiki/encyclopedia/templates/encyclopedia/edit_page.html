@@ -1,0 +1,28 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block body %}
+    <h1>Edit a page</h1>
+    <p class="error">
+        {{error_page_already_exists|safe}}
+    </p>
+    <p>
+        Title of page:
+        <form>
+        <textarea class="textarea" id="content" name="new_title" rows="1" cols="1">{{title|safe}}</textarea>
+
+        <br>
+        <br>
+        Content of page:
+        <br>
+        <textarea class="textarea" id="content" name="new_content" rows="25" cols="1" placeholder="Insert content">{{html_content|safe}}</textarea>
+        
+        <br>
+        <button class="button" type = "submit" value = Click name = "bouton_edit">Save this page</button>
+        </form>
+    </p>
+
+{% endblock %}

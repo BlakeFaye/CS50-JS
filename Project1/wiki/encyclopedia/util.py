@@ -1,4 +1,6 @@
 import re
+import os
+import random
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -55,4 +57,17 @@ def create_new_page(title, content):
     file_content = "#" + str(title) + "\n\r" + content
     with open(file_name, "x") as file:
         file.write(file_content)
-    return ()
+    return (print("page successfuly created"))
+
+def edit_page(title, new_title, new_content):
+    file_name = ".\entries\\" + str(title) + ".md"
+    file_new_name = ".\entries\\" + str(new_title) + ".md"
+    with open(file_name, "w") as file:
+        file.write(new_content)
+    if title != new_title:
+        os.rename(file_name, file_new_name)
+    return (print("page successfuly edited"))
+
+def get_random_page():
+    return (random.choice(list_entries()))
+    

@@ -69,3 +69,8 @@ textarea {
   background-color: black;
   color: white;
 }
+
+.error{
+    color:rgb(170, 59, 59);
+    margin-top:20px;
+}
