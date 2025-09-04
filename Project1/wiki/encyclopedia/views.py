@@ -42,4 +42,12 @@ def search_result(request):
         })
     
 def new_page(request):
-    return render(request, "encyclopedia/new_page.html")
+    try:
+        if(request.GET.get('bouton')):
+            util.create_new_page(request.GET.get('title'))
+            return redirect(new_page)
+        else: return render(request,'encyclopedia/new_page.html')
+    except(FileExistsError):
+        print("Fichier déjà existant")
+        return render(request,'encyclopedia/new_page.html')
+    

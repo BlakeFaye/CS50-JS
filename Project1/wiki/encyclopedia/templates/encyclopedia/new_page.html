@@ -10,11 +10,15 @@
         Title of new wiki page:
         <form action="{% url 'new_page' %}" method="get">
             <input class="title" type="text" name="title" placeholder="Insert title">
-        </form>
-        Content of new wiki page (Markdown format):
-        <textarea class="textarea" id="content" name="content" rows="1" cols="1" placeholder="Insert content"></textarea>
         <br>
-        <button class="button">Create a new page</button>
+
+        Content of new wiki page (Markdown format):
+        <textarea class="textarea" id="content" name="content" rows="25" cols="1" placeholder="Insert content"></textarea>
+        <br>
+        
+            <input type="text" value="8" name="mytextbox" size="1"/>
+            <button class="button" type = "submit" value = Click name = "bouton">Create a new page</button>
+        </form>
     </p>
 
 {% endblock %}
