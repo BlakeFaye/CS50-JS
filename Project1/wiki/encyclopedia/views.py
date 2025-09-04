@@ -44,8 +44,9 @@ def search_result(request):
 def new_page(request):
     try:
         if(request.GET.get('bouton')):
-            util.create_new_page(request.GET.get('title'))
-            return redirect(new_page)
+            title = request.GET.get('title')
+            util.create_new_page(title, request.GET.get('content'))
+            return redirect(content, title=title)
         else: return render(request,'encyclopedia/new_page.html')
     except(FileExistsError):
         print("Fichier déjà existant")

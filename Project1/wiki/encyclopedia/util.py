@@ -50,9 +50,9 @@ def search_results(search):
     return list(sorted(re.sub(r"\.md$", "", filename)
             for filename in result if filename.endswith(".md")))
 
-def create_new_page(param):
-    print(f"coucou", {param})
-    file_name = ".\entries\\" + str(param) + ".md"
-    print (file_name)
-    f = open(file_name, "x")
+def create_new_page(title, content):
+    file_name = ".\entries\\" + str(title) + ".md"
+    file_content = "#" + str(title) + "\n\r" + content
+    with open(file_name, "x") as file:
+        file.write(file_content)
     return ()
