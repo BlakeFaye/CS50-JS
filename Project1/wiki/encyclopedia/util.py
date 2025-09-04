@@ -60,10 +60,13 @@ def create_new_page(title, content):
     return (print("page successfuly created"))
 
 def edit_page(title, new_title, new_content):
+    #Ouvrir un fichier
     file_name = ".\entries\\" + str(title) + ".md"
+    #Indiquer le nouveau nom du fichier avec le path
     file_new_name = ".\entries\\" + str(new_title) + ".md"
     with open(file_name, "w") as file:
         file.write(new_content)
+    #Renommer le fichier s'il y a un nouveau nom
     if title != new_title:
         os.rename(file_name, file_new_name)
     return (print("page successfuly edited"))
