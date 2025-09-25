@@ -1,0 +1,4 @@
+
+Pour installer Sqlite : winget install sqlite.sqlite
+
+Pour mettre en forme les requêtes via cli : .headers yes & .mode columns
