@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from .models import User
+
+from .models import User, Auction_Listing, User, Comment, Bid
 
 
 def index(request):
@@ -61,3 +62,16 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+    
+def listings(request):
+    return render(request, "auctions/listings.html", {
+        "listings": Auction_Listing.objects.all()
+    })
+
+def new_listing(request):
+    if(request.GET.get("bouton_add")):
+        title = request.GET.get('title')
+        util.create_new_listing(title, request.GET.get('content'))
+        return redirect(listings)
+    else: 
+        return render(request,'auctions/new_listing.html')
