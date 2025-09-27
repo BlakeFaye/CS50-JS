@@ -6,6 +6,7 @@ from django.urls import reverse
 
 
 from .models import User, Auction_Listing, User, Comment, Bid
+from .forms import Auction_Listing_Form
 
 
 def index(request):
@@ -69,9 +70,12 @@ def listings(request):
     })
 
 def new_listing(request):
-    if(request.GET.get("bouton_add")):
-        title = request.GET.get('title')
-        util.create_new_listing(title, request.GET.get('content'))
-        return redirect(listings)
-    else: 
-        return render(request,'auctions/new_listing.html')
+        print(request.method)
+        if request.method == 'POST':
+            form = Auction_Listing_Form(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('index')
+        else:
+            form = Auction_Listing_Form()
+        return render(request, 'auctions/new_listing.html', {'form': form})
