@@ -5,11 +5,20 @@ from django.db import models
 class User(AbstractUser):
     pass
 
+CATEGORY_OPTIONS = [
+    ("fashion", "Fashion"),
+    ("toys", "Toys"),
+    ("electronics", "Electronics"),
+    ("home", "Home"),
+    ("other", "Other")
+    ]
+
 class Auction_Listing(models.Model):
     title = models.CharField(max_length=240)
     price = models.FloatField()
     user = models.ForeignKey(User, related_name="auction_user", on_delete=models.CASCADE)
-    category = models.CharField(max_length=300)
+    category = models.CharField(max_length=300, choices=CATEGORY_OPTIONS, default="other")
+    description = models.TextField(max_length=1000)
     picture = models.CharField(max_length=300) #TODO
     date = models.DateTimeField(auto_now=True)
 

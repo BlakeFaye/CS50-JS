@@ -70,12 +70,16 @@ def listings(request):
     })
 
 def new_listing(request):
-        print(request.method)
         if request.method == 'POST':
             form = Auction_Listing_Form(request.POST)
+            print("1")
             if form.is_valid():
+                print("2")
                 form.save()
                 return redirect('index')
+            else:
+                print("4")
         else:
+            print("3")
             form = Auction_Listing_Form()
         return render(request, 'auctions/new_listing.html', {'form': form})
