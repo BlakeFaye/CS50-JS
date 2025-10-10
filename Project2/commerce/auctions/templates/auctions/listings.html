@@ -4,7 +4,10 @@
     <h2>Active Listings</h2>
         <ul>
             {% for listing in listings %}
-                <li>Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}</li>
+                <li>Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}
+                    <br/>
+                    <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">
+                </li>
             {% endfor %}
         </ul>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.db import models    
 
 
 class User(AbstractUser):
@@ -19,7 +19,7 @@ class Auction_Listing(models.Model):
     user = models.ForeignKey(User, related_name="auction_user", on_delete=models.CASCADE)
     category = models.CharField(max_length=300, choices=CATEGORY_OPTIONS, default="other")
     description = models.TextField(max_length=1000)
-    picture = models.CharField(max_length=300) #TODO
+    picture = models.URLField(max_length=300) #TODO
     date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
