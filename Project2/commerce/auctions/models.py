@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+   pass
 
 CATEGORY_OPTIONS = [
     ("fashion", "Fashion"),
@@ -43,3 +43,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user} had commented on {self.lising} on the {self.date} : {self.content}"
+

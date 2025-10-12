@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 
@@ -70,16 +70,29 @@ def listings(request):
     })
 
 def new_listing(request):
-        if request.method == 'POST':
-            form = Auction_Listing_Form(request.POST)
-            print("1")
-            if form.is_valid():
-                print("2")
-                form.save()
-                return redirect('index')
-            else:
-                print("4")
-        else:
-            print("3")
-            form = Auction_Listing_Form()
-        return render(request, 'auctions/new_listing.html', {'form': form})
+    if request.method == 'POST':
+        form = Auction_Listing_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    else:
+        form = Auction_Listing_Form()
+    return render(request, 'auctions/new_listing.html', {'form': form})
+
+def edit_listing(request, id):
+
+    listing_instance = get_object_or_404(Auction_Listing, id=id)
+
+    if request.method == 'GET':
+        context = {'form': Auction_Listing_Form(instance=listing_instance), 'id': id}
+        return render(request,'auctions/edit_listing.html',context)
+    elif request.method == 'POST':
+        form = Auction_Listing_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+        
+def watchlist(request):
+    return render(request, "auctions/watchlist.html", {
+        "listings": Auction_Listing.objects.all()
+    })

@@ -7,3 +7,4 @@ class Auction_Listing_Form(ModelForm):
     class Meta:
         model = Auction_Listing
         fields = ["title", "price", "user", "category", "description", "picture"]
+
