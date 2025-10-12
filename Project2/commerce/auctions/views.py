@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages 
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
 from .forms import Auction_Listing_Form
@@ -80,10 +82,10 @@ def new_listing(request):
         form = Auction_Listing_Form()
     return render(request, 'auctions/new_listing.html', {'form': form})
 
-def edit_listing(request, id):
+def edit_listing(request, auction_id):
 
-    listing_instance = get_object_or_404(Auction_Listing, id=id)
-
+    listing_instance = Auction_Listing.objects.get(pk=auction_id)
+    print(listing_instance.id)
     if request.method == 'GET':
         context = {'form': Auction_Listing_Form(instance=listing_instance), 'id': id}
         return render(request,'auctions/edit_listing.html',context)
@@ -93,22 +95,50 @@ def edit_listing(request, id):
             form.save()
             return redirect('index')
         
-def watchlist_view(request):
+def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listings": Auction_Listing.objects.all()
     })
 
-def watchlist_add(request, id):
-    listing_to_save = get_object_or_404(Auction_Listing, pk=id)
-    # Check if the item already exists in that user watchlist
-    print(Watchlist.objects)
-    if Watchlist.objects.filter(user=request.user, item=id).exists():
-        print("item already in watchlist")
-        messages.add_message(request, messages.ERROR, "You already have it in your watchlist.")
-        return HttpResponseRedirect(reverse("auctions:index"))
-    # Get the user watchlist or create it if it doesn't exists
-    user_list, created = Watchlist.objects.get_or_create(user=request.user)
-    # Add the item through the ManyToManyField (Watchlist => item)
-    user_list.item.add(listing_to_save)
-    messages.add_message(request, messages.SUCCESS, "Successfully added to your watchlist")
-    return render(request, "auctions/watchlist.html")
+def addWatchlist(request, auction_id):   
+    # check to handle POST method only
+    if request.method == "POST":
+        # check the existence auction
+        try:
+            # get the auction listing by id
+            listing_instance = Auction_Listing.objects.get(pk=auction_id)     
+            
+        except Auction_Listing.DoesNotExist:
+            return render(request, "auctions/error.html", {
+                "code": 404,
+                "message": "The auction does not exist."
+            })
+
+        # check the existance of the user's watchlist
+        try:
+            watchlist = Watchlist.objects.get(user=request.user)
+
+        except ObjectDoesNotExist:
+            # if no watchlist, create an watchlist object for the user
+            watchlist = Watchlist.objects.create(user=request.user)
+        
+        # check if the item exists in the user's watchlist
+        if Watchlist.objects.filter(user=request.user, auctions=listing_instance):
+            messages.error(request, 'You already added in your watchlist')
+            return HttpResponseRedirect(reverse("listing", args=(listing_instance.id,)))
+
+        # if the item is not in the watchlist
+        watchlist.auctions.add(listing_instance)
+            
+        # return sucessful message
+        messages.success(request, 'The listing is added to your Watchlist.')
+
+        return HttpResponseRedirect(reverse("listing", args=(listing_instance.id,)))
+        
+     
+    # addWatchlist view do not support get method
+    else:
+        return render(request, "auctions/error.html", {
+            "code": 405,
+            "message": "The GET method is not allowed."
+        })

@@ -46,11 +46,8 @@ class Comment(models.Model):
 
 
 class Watchlist(models.Model):
-    class Meta:
-        abstract = True
-
-    user = models.ForeignKey(User, related_name="watchlist_user", on_delete=models.CASCADE)
-    listing = models.ForeignKey(Auction_Listing, related_name="watchlist_listing", on_delete=models.CASCADE)
+    auctions = models.ManyToManyField(Auction_Listing, related_name="auctions_in_watchlist", blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="watchlist_user")
 
     def __str__(self):
-        return f"{self.user} is watchlisting {self.article}"
+        return f"{self.user}'s watchlist"
