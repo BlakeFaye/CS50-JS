@@ -1,11 +1,12 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.contrib import messages 
 
 
-from .models import User, Auction_Listing, User, Comment, Bid
+from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
 from .forms import Auction_Listing_Form
 
 
@@ -92,7 +93,22 @@ def edit_listing(request, id):
             form.save()
             return redirect('index')
         
-def watchlist(request):
+def watchlist_view(request):
     return render(request, "auctions/watchlist.html", {
         "listings": Auction_Listing.objects.all()
     })
+
+def watchlist_add(request, id):
+    listing_to_save = get_object_or_404(Auction_Listing, pk=id)
+    # Check if the item already exists in that user watchlist
+    print(Watchlist.objects)
+    if Watchlist.objects.filter(user=request.user, item=id).exists():
+        print("item already in watchlist")
+        messages.add_message(request, messages.ERROR, "You already have it in your watchlist.")
+        return HttpResponseRedirect(reverse("auctions:index"))
+    # Get the user watchlist or create it if it doesn't exists
+    user_list, created = Watchlist.objects.get_or_create(user=request.user)
+    # Add the item through the ManyToManyField (Watchlist => item)
+    user_list.item.add(listing_to_save)
+    messages.add_message(request, messages.SUCCESS, "Successfully added to your watchlist")
+    return render(request, "auctions/watchlist.html")
