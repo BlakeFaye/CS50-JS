@@ -9,8 +9,11 @@
         {{ form.as_p }}
     <button type="submit" class="btn btn-success">Save</button>
     </form>
-        <form action="{% url 'addWatchlist' auction.id %}" method="post">
-    {% csrf_token %} 
 
-aa {{listing_instance.id}}
+    <form action="{% url 'addWatchlist' auction_id %}" method="post">
+    {% csrf_token %} 
+    <button type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px">Add to Watchlist</button>
+    </form>
+
+aa {{test}}
 {% endblock %}
