@@ -96,23 +96,23 @@ def edit_listing(request, auction_id):
             return redirect('index')
         
 def watchlist(request):
-    #TODO : Attention, modèle de données chelou, ça affiche seulement les watchlist, pas les contenus des watchlist hmmm
-    watchlist = Watchlist.objects.filter(user=request.user).values_list("user_id")
-    print(f"glouglou {watchlist}")
+    selected_watchlist = Watchlist.objects.all(user=request.user)
     return render(request, "auctions/watchlist.html", {
-        "listings": Auction_Listing.objects.all()
+        "watchlist_listings": Watchlist.objects.all()
     })
 
 def addWatchlist(request, auction_id): 
     #TODO : Ajouter les contrôles  
     #Get watchlist of curent user
-    watchlist = Watchlist.objects.get(user=request.user)
-
-    #To create a watchlist entry
-    #watchlist = Watchlist.objects.create(user=request.user)
-    listing_instance = Auction_Listing.objects.get(pk=auction_id)   
+    auction_instance = Auction_Listing.objects.get(pk= auction_id)
+    watch = Watchlist(user=request.user, auctions=auction_instance)  
     #To add the listing in the watchlist
-    watchlist.auctions.add(listing_instance)
+    watch.save()
     return render(request, "auctions/listings.html", {
         "listings": Auction_Listing.objects.all()
     })
+
+def removeWatchlist(request, auction_id):
+    pass
+    #TODO : afficher le remove si l'item est est déjà watchlisté
+    #TODO : Ajouter le système de bid omg

@@ -3,13 +3,13 @@
 {% block body %}
     <h2>Watchlist</h2>
         <ul>
-            {% for listing in listings %}
+            {% for listing in watchlist_listings %}
                 <li>
-                    <a href="{% url 'edit_listing' listing.id %}">
-                        Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}
+                    <a href="{% url 'edit_listing' listing.auctions.id %}">
+                        Item number {{ listing.id }} : {{ listing.auctions.title }}, ${{ listing.auctions.price }}
                         <br/>
-                        <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">
-                    </a>
+                        <img src="{{ listing.auctions.picture }}" alt="Picture of the listing" style= "max-width:10%">
+                    </a>    
                 </li>
             {% endfor %}
         </ul>
