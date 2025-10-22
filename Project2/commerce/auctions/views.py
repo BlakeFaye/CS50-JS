@@ -84,19 +84,31 @@ def new_listing(request):
 
 def edit_listing(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
-    print(f"listing_instance.id {listing_instance.id}")
     if request.method == 'GET':
+        
+               
+        #partie pour voir si le listing est watchlisté
+        is_watchlisted = False
+        try:
+            Watchlist.objects.get(user=request.user, auctions=listing_instance)
+            is_watchlisted = True
+        except:
+            print("item not watchlisted")
+            pass
+
         #On a besoin de repasser auction_id pour le réinjecter dans la watchlist
-        context = {'form': Auction_Listing_Form(instance=listing_instance), 'id': id, 'auction_id':auction_id}
-        return render(request,'auctions/edit_listing.html',context)
+        context = {'form': Auction_Listing_Form(instance=listing_instance), 'id': id, 'auction_id':auction_id, 'is_watchlisted':is_watchlisted}
+        return render(request,'auctions/edit_listing.html', context)
+    
     elif request.method == 'POST':
         form = Auction_Listing_Form(request.POST)
         if form.is_valid():
             form.save()
             return redirect('index')
+    
         
 def watchlist(request):
-    selected_watchlist = Watchlist.objects.all(user=request.user)
+    #selected_watchlist = Watchlist.objects.all(user=request.user)
     return render(request, "auctions/watchlist.html", {
         "watchlist_listings": Watchlist.objects.all()
     })
@@ -108,11 +120,19 @@ def addWatchlist(request, auction_id):
     watch = Watchlist(user=request.user, auctions=auction_instance)  
     #To add the listing in the watchlist
     watch.save()
-    return render(request, "auctions/listings.html", {
-        "listings": Auction_Listing.objects.all()
+    return render(request, "auctions/watchlist.html", {
+        "watchlist_listings": Watchlist.objects.all()
     })
 
 def removeWatchlist(request, auction_id):
-    pass
+    auction_instance = Auction_Listing.objects.get(pk= auction_id)
+    watch = Watchlist.objects.get(user=request.user, auctions=auction_instance) 
+    watch.delete()
+    return render(request, "auctions/watchlist.html", {
+        "watchlist_listings": Watchlist.objects.all()
+    })
+
     #TODO : afficher le remove si l'item est est déjà watchlisté
-    #TODO : Ajouter le système de bid omg
+
+
+#TODO : Ajouter le système de bid omg

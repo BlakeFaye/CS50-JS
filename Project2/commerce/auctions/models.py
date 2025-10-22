@@ -42,12 +42,15 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user} had commented on {self.lising} on the {self.date} : {self.content}"
+        return f"ID : {self.id} {self.user} had commented on {self.lising} on the {self.date} : {self.content}"
 
 
 class Watchlist(models.Model):
     auctions = models.ForeignKey(Auction_Listing, related_name="auctions_in_watchlist", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="watchlist_user", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('auctions', 'user')
 
     def __str__(self):
         return f"{self.user}'s watchlist with {self.auctions}"
