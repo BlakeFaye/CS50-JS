@@ -86,7 +86,6 @@ def edit_listing(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
     if request.method == 'GET':
         
-               
         #partie pour voir si le listing est watchlisté
         is_watchlisted = False
         try:
@@ -95,9 +94,8 @@ def edit_listing(request, auction_id):
         except:
             print("item not watchlisted")
             pass
-
         #On a besoin de repasser auction_id pour le réinjecter dans la watchlist
-        context = {'form': Auction_Listing_Form(instance=listing_instance), 'id': id, 'auction_id':auction_id, 'is_watchlisted':is_watchlisted}
+        context = {'form_auction': Auction_Listing_Form(instance=listing_instance), 'id': id, 'auction_id':auction_id, 'is_watchlisted':is_watchlisted}
         return render(request,'auctions/edit_listing.html', context)
     
     elif request.method == 'POST':
@@ -134,5 +132,34 @@ def removeWatchlist(request, auction_id):
 
     #TODO : afficher le remove si l'item est est déjà watchlisté
 
+def listing(request, auction_id):
+    listing_instance = Auction_Listing.objects.get(pk=auction_id)
+    if request.method == 'GET':
+        
+        title = listing_instance.title
+
+        #partie pour voir si le listing est watchlisté
+        is_watchlisted = False
+        try:
+            Watchlist.objects.get(user=request.user, auctions=listing_instance)
+            is_watchlisted = True
+        except:
+            print("item not watchlisted")
+            pass
+        #On a besoin de repasser auction_id pour le réinjecter dans la watchlist
+        context = {'id': id, 'auction_id':auction_id, 'is_watchlisted':is_watchlisted, 'title':title}
+        return render(request,'auctions/listing.html', context)
+    
+    elif request.method == 'POST':
+        form = Auction_Listing_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+
+
+def addBid(request, auction_id):
+    auction_instance = Auction_Listing.objects.get(pk= auction_id)
+
+    pass
 
 #TODO : Ajouter le système de bid omg

@@ -1,14 +1,8 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Edit auction listing</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form_auction.errors }}
-        {{ form_auction.non_field_errors }}
-        {{ form_auction.as_p }}
-    <button type="submit" class="btn btn-success">Save</button>
-    </form>
+    <h2>View auction listing</h2>
+    {{title}}
 
     {% if is_watchlisted %}
         <form action="{% url 'removeWatchlist' auction_id %}" method="post">
