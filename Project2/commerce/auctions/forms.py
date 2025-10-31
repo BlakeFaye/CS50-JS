@@ -1,5 +1,5 @@
-from django.forms import ModelForm, ModelChoiceField
-from .models import Auction_Listing, User
+from django.forms import ModelForm, ModelChoiceField, Form
+from .models import Auction_Listing, User, Bid
 
 class Auction_Listing_Form(ModelForm):
     user = ModelChoiceField(queryset=User.objects.all())
@@ -7,4 +7,9 @@ class Auction_Listing_Form(ModelForm):
     class Meta:
         model = Auction_Listing
         fields = ["title", "price", "user", "category", "description", "picture"]
+
+class Bid_Form(ModelForm):
+    class Meta:
+        model = Bid
+        fields = ["amount"]
 

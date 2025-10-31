@@ -32,7 +32,7 @@ class Bid(models.Model):
     date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user} had bid {self.amount} for {self.lising} on the {self.date}"
+        return f"{self.user} had bid {self.amount} for {self.listing} on the {self.date}"
 
 
 class Comment(models.Model):

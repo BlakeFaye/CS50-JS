@@ -1,15 +1,14 @@
 from django.contrib.auth import authenticate, login, logout, get_user
 from django.db import IntegrityError
+from django.db.models import Max
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages 
-
 from django.core.exceptions import ObjectDoesNotExist
 
-
 from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
-from .forms import Auction_Listing_Form
+from .forms import Auction_Listing_Form, Bid_Form
 
 
 def index(request):
@@ -66,11 +65,13 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
-    
+
+
 def listings(request):
     return render(request, "auctions/listings.html", {
         "listings": Auction_Listing.objects.all()
     })
+
 
 def new_listing(request):
     if request.method == 'POST':
@@ -82,11 +83,12 @@ def new_listing(request):
         form = Auction_Listing_Form()
     return render(request, 'auctions/new_listing.html', {'form': form})
 
+
 def edit_listing(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
-    if request.method == 'GET':
-        
-               
+
+    #récup du formulaire
+    if request.method == 'GET':               
         #partie pour voir si le listing est watchlisté
         is_watchlisted = False
         try:
@@ -95,23 +97,54 @@ def edit_listing(request, auction_id):
         except:
             print("item not watchlisted")
             pass
+        
+        #partie pour récupérer les max bid général et par user
+        bids = Bid.objects.filter(listing=listing_instance)
+        try:
+            max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
+        except:
+            max_bid = 0
+        try :
+            user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
+        except:
+            user_max_bid = 0
 
-        #On a besoin de repasser auction_id pour le réinjecter dans la watchlist
-        context = {'form': Auction_Listing_Form(instance=listing_instance), 'id': id, 'auction_id':auction_id, 'is_watchlisted':is_watchlisted}
+        context = {
+            'listing_form': Auction_Listing_Form(instance=listing_instance), 
+            'bid_form': Bid_Form(),
+            'id': id, 'auction_id':auction_id,
+            'is_watchlisted':is_watchlisted,
+            'max_bid' : max_bid, 'user_max_bid':user_max_bid}
+        
         return render(request,'auctions/edit_listing.html', context)
     
+    #envoi des données listing et bid
     elif request.method == 'POST':
-        form = Auction_Listing_Form(request.POST)
-        if form.is_valid():
-            form.save()
+        listing_form = Auction_Listing_Form(request.POST)
+        bid_form = Bid_Form(request.POST)
+        #Formulaire listing
+        if listing_form.is_valid():
+            listing_form.save()
             return redirect('index')
-    
+        #Formulaire bid
+        if bid_form.is_valid():
+            temp_bid = bid_form.save(commit=False)
+            temp_bid.user = request.user
+            temp_bid.listing = listing_instance
+            temp_bid.save()
+            return redirect('index')
         
+#TODO : 4 versions de formulaires : 
+    # - Si auteur et open : Edition et pas de bid
+    # - Si auteur et fermé : Lecture seule, bouton rouvrir, pas de bid
+    # - Si consulte et open : Lecture seule, bid
+    # - Si consulte et fermé : Lecture seule, pas de bid
+
 def watchlist(request):
-    #selected_watchlist = Watchlist.objects.all(user=request.user)
     return render(request, "auctions/watchlist.html", {
         "watchlist_listings": Watchlist.objects.all()
     })
+
 
 def addWatchlist(request, auction_id): 
     #TODO : Ajouter les contrôles  
@@ -124,6 +157,7 @@ def addWatchlist(request, auction_id):
         "watchlist_listings": Watchlist.objects.all()
     })
 
+
 def removeWatchlist(request, auction_id):
     auction_instance = Auction_Listing.objects.get(pk= auction_id)
     watch = Watchlist.objects.get(user=request.user, auctions=auction_instance) 
@@ -131,8 +165,3 @@ def removeWatchlist(request, auction_id):
     return render(request, "auctions/watchlist.html", {
         "watchlist_listings": Watchlist.objects.all()
     })
-
-    #TODO : afficher le remove si l'item est est déjà watchlisté
-
-
-#TODO : Ajouter le système de bid omg
