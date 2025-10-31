@@ -13,3 +13,4 @@ class Bid_Form(ModelForm):
         model = Bid
         fields = ["amount"]
 
+#https://python.plainenglish.io/how-to-make-inline-form-fields-read-only-based-on-inline-field-values-in-django-d1b25dca6630
