@@ -4,8 +4,8 @@ from django.db.models import Max
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.contrib import messages 
-from django.core.exceptions import ObjectDoesNotExist
+
+from django.core.exceptions import ValidationError
 
 from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
 from .forms import Auction_Listing_Form, Bid_Form
@@ -87,6 +87,11 @@ def new_listing(request):
 def edit_listing(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
 
+    #partie pour récupérer les max bid général et par user
+    bids = Bid.objects.filter(listing=listing_instance)
+    max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
+    user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
+
     #récup du formulaire
     if request.method == 'GET':               
         #partie pour voir si le listing est watchlisté
@@ -98,17 +103,6 @@ def edit_listing(request, auction_id):
             print("item not watchlisted")
             pass
         
-        #partie pour récupérer les max bid général et par user
-        bids = Bid.objects.filter(listing=listing_instance)
-        try:
-            max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
-        except:
-            max_bid = 0
-        try :
-            user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
-        except:
-            user_max_bid = 0
-
         context = {
             'listing_form': Auction_Listing_Form(instance=listing_instance), 
             'bid_form': Bid_Form(),
@@ -120,19 +114,22 @@ def edit_listing(request, auction_id):
     
     #envoi des données listing et bid
     elif request.method == 'POST':
-        listing_form = Auction_Listing_Form(request.POST)
+        listing_form = Auction_Listing_Form(request.POST, instance=listing_instance)
         bid_form = Bid_Form(request.POST)
         #Formulaire listing
         if listing_form.is_valid():
             listing_form.save()
-            return redirect('index')
+            return redirect('edit_listing', auction_id=auction_id)
         #Formulaire bid
         if bid_form.is_valid():
-            temp_bid = bid_form.save(commit=False)
-            temp_bid.user = request.user
-            temp_bid.listing = listing_instance
-            temp_bid.save()
-            return redirect('index')
+            user_bid = bid_form.save(commit=False)
+            if user_bid.amount < max_bid:
+                raise ValidationError ("Your bid must be superior than max bid")
+            user_bid.user = request.user
+            user_bid.listing = listing_instance
+            user_bid.save()
+            print(listing_instance)
+            return redirect('edit_listing', auction_id=auction_id)
         
 #TODO : 4 versions de formulaires : 
     # - Si auteur et open : Edition et pas de bid
