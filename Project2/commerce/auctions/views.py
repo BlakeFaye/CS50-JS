@@ -115,7 +115,7 @@ def edit_listing(request, auction_id):
     #envoi des données listing et bid
     elif request.method == 'POST':
         listing_form = Auction_Listing_Form(request.POST, instance=listing_instance)
-        bid_form = Bid_Form(request.POST)
+        bid_form = Bid_Form(request.POST, max_bid)
         #Formulaire listing
         if listing_form.is_valid():
             listing_form.save()
@@ -123,13 +123,18 @@ def edit_listing(request, auction_id):
         #Formulaire bid
         if bid_form.is_valid():
             user_bid = bid_form.save(commit=False)
-            if user_bid.amount < max_bid:
-                raise ValidationError ("Your bid must be superior than max bid")
             user_bid.user = request.user
             user_bid.listing = listing_instance
             user_bid.save()
-            print(listing_instance)
             return redirect('edit_listing', auction_id=auction_id)
+
+        #Si un des formulaires n'est pas valide alors on retourne la page à nouveau ce qui permet de display les erreurs
+        context = {
+            'listing_form': Auction_Listing_Form(instance=listing_instance), 
+            'bid_form': bid_form,
+            'id': id, 'auction_id':auction_id,
+            'max_bid' : max_bid, 'user_max_bid':user_max_bid}
+        return render(request,'auctions/edit_listing.html', context)   
         
 #TODO : 4 versions de formulaires : 
     # - Si auteur et open : Edition et pas de bid
