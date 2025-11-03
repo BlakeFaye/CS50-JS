@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 
 from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
-from .forms import Auction_Listing_Form, Bid_Form
+from .forms import Auction_Listing_Form, Bid_Form, Auction_Listing_Form_RO
 
 
 def index(request):
@@ -82,6 +82,13 @@ def new_listing(request):
     else:
         form = Auction_Listing_Form()
     return render(request, 'auctions/new_listing.html', {'form': form})
+
+
+def listing(request, auction_id):
+    listing_instance = Auction_Listing.objects.get(pk=auction_id)
+    context = {
+            'listing_form': Auction_Listing_Form_RO(instance=listing_instance)}
+    return render(request,'auctions/listing.html', context)
 
 
 def edit_listing(request, auction_id):

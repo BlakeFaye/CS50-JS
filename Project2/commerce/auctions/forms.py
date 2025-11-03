@@ -9,6 +9,21 @@ class Auction_Listing_Form(ModelForm):
         model = Auction_Listing
         fields = ["title", "price", "user", "category", "description", "picture"]
 
+class Auction_Listing_Form_RO(ModelForm):
+    class Meta:
+        model = Auction_Listing
+        fields = ["title", "price", "user", "category", "description", "picture"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["title"].disabled = True
+        self.fields["price"].disabled = True
+        self.fields["user"].disabled = True
+        self.fields["category"].disabled = True
+        self.fields["description"].disabled = True
+        self.fields["picture"].disabled = True
+
+
 class Bid_Form(ModelForm):
 
     max_bid = 0
@@ -27,4 +42,3 @@ class Bid_Form(ModelForm):
         model = Bid
         fields = ["amount"]
 
-#https://python.plainenglish.io/how-to-make-inline-form-fields-read-only-based-on-inline-field-values-in-django-d1b25dca6630
