@@ -5,13 +5,17 @@
         <ul>
             {% for listing in listings %}
                 <li>
+                    Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}
+                    <br/>
+                    <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">                       
                     
-                        Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}
-                        <br/>
-                        <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">                       
-                    <a href="{% url 'edit_listing' listing.id %}">Edit listing</a>      
-                    <a href="{% url 'listing' listing.id %}">View listing</a>      
+                    {% if listing.user == current_user %}
+                        <a href="{% url 'edit_listing' listing.id %}">Edit listing</a>  
+                    {% else %}    
+                        <a href="{% url 'listing' listing.id %}">View listing</a>    
+                    {% endif %}      
                 </li>
             {% endfor %}
         </ul>
+        
 {% endblock %}

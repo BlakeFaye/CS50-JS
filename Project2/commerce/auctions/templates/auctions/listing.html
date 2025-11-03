@@ -1,12 +1,35 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Edit auction listing</h2>
+    <h2>View auction listing</h2>
     <form method="GET">
         {% csrf_token %}
         {{ listing_form.errors }}
         {{ listing_form.non_field_errors }}
         {{ listing_form.as_p }}
     </form>
+
+    Bidding </br>
+    Max bid for this listing is: ${{ max_bid }}
+    Your biggest bid for this listing is: ${{ user_max_bid }}
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ bid_form.as_p }}
+        <button type="submit" class="btn btn-success">Place bid</button>       
+    </form>
+
+    {% if is_watchlisted %}
+        <form action="{% url 'removeWatchlist' auction_id %}" method="post">
+        {% csrf_token %} 
+        <button type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px">Remove from Watchlist</button>
+        </form>
+
+    {% else %}
+        <form action="{% url 'addWatchlist' auction_id %}" method="post">
+        {% csrf_token %} 
+        <button type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px">Add to Watchlist</button>
+        </form>
+    {% endif %}
 
 {% endblock %}

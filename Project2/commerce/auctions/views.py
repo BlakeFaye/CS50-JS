@@ -68,8 +68,11 @@ def register(request):
 
 
 def listings(request):
+    current_user = request.user
+
     return render(request, "auctions/listings.html", {
-        "listings": Auction_Listing.objects.all()
+        "listings": Auction_Listing.objects.all(),
+        'current_user':current_user
     })
 
 
@@ -86,9 +89,45 @@ def new_listing(request):
 
 def listing(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
-    context = {
-            'listing_form': Auction_Listing_Form_RO(instance=listing_instance)}
-    return render(request,'auctions/listing.html', context)
+
+    bids = Bid.objects.filter(listing=listing_instance)
+    max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
+    user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
+    
+    is_watchlisted = False
+    try:
+        Watchlist.objects.get(user=request.user, auctions=listing_instance)
+        is_watchlisted = True
+    except:
+        print("item not watchlisted")
+        pass
+
+    if request.method == 'GET':
+        context = {
+                'listing_form': Auction_Listing_Form_RO(instance=listing_instance), 
+                'bid_form': Bid_Form(),
+                'id': id, 'auction_id':auction_id,
+                'is_watchlisted':is_watchlisted,
+                'max_bid' : max_bid, 'user_max_bid':user_max_bid}
+        return render(request,'auctions/listing.html', context)
+    
+    elif request.method == 'POST':
+        listing_price = listing_instance.price
+        bid_form = Bid_Form(request.POST, max_bid, listing_price)
+        if bid_form.is_valid():
+            user_bid = bid_form.save(commit=False)
+            user_bid.user = request.user
+            user_bid.listing = listing_instance
+            user_bid.save()
+            return redirect('listing', auction_id=auction_id)
+
+        #Si un des formulaires n'est pas valide alors on retourne la page à nouveau ce qui permet de display les erreurs
+        context = {
+            'listing_form': Auction_Listing_Form_RO(instance=listing_instance), 
+            'bid_form': bid_form,
+            'id': id, 'auction_id':auction_id,
+            'max_bid' : max_bid, 'user_max_bid':user_max_bid}
+        return render(request,'auctions/listing.html', context)
 
 
 def edit_listing(request, auction_id):
@@ -97,8 +136,7 @@ def edit_listing(request, auction_id):
     #partie pour récupérer les max bid général et par user
     bids = Bid.objects.filter(listing=listing_instance)
     max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
-    user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
-
+    
     #récup du formulaire
     if request.method == 'GET':               
         #partie pour voir si le listing est watchlisté
@@ -115,32 +153,20 @@ def edit_listing(request, auction_id):
             'bid_form': Bid_Form(),
             'id': id, 'auction_id':auction_id,
             'is_watchlisted':is_watchlisted,
-            'max_bid' : max_bid, 'user_max_bid':user_max_bid}
-        
+            'max_bid' : max_bid}
         return render(request,'auctions/edit_listing.html', context)
     
-    #envoi des données listing et bid
     elif request.method == 'POST':
         listing_form = Auction_Listing_Form(request.POST, instance=listing_instance)
-        bid_form = Bid_Form(request.POST, max_bid)
-        #Formulaire listing
         if listing_form.is_valid():
             listing_form.save()
-            return redirect('edit_listing', auction_id=auction_id)
-        #Formulaire bid
-        if bid_form.is_valid():
-            user_bid = bid_form.save(commit=False)
-            user_bid.user = request.user
-            user_bid.listing = listing_instance
-            user_bid.save()
             return redirect('edit_listing', auction_id=auction_id)
 
         #Si un des formulaires n'est pas valide alors on retourne la page à nouveau ce qui permet de display les erreurs
         context = {
             'listing_form': Auction_Listing_Form(instance=listing_instance), 
-            'bid_form': bid_form,
             'id': id, 'auction_id':auction_id,
-            'max_bid' : max_bid, 'user_max_bid':user_max_bid}
+            'max_bid' : max_bid}
         return render(request,'auctions/edit_listing.html', context)   
         
 #TODO : 4 versions de formulaires : 
@@ -156,8 +182,6 @@ def watchlist(request):
 
 
 def addWatchlist(request, auction_id): 
-    #TODO : Ajouter les contrôles  
-    #Get watchlist of curent user
     auction_instance = Auction_Listing.objects.get(pk= auction_id)
     watch = Watchlist(user=request.user, auctions=auction_instance)  
     #To add the listing in the watchlist

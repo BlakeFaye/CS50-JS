@@ -21,6 +21,7 @@ class Auction_Listing(models.Model):
     description = models.TextField(max_length=1000)
     picture = models.URLField(max_length=300) #TODO
     date = models.DateTimeField(auto_now=True)
+    auction_open = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.title} by {self.user} for {self.price}. In category: {self.category} with picture: {self.picture} on the {self.date}"

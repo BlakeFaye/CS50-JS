@@ -23,20 +23,22 @@ class Auction_Listing_Form_RO(ModelForm):
         self.fields["description"].disabled = True
         self.fields["picture"].disabled = True
 
-
 class Bid_Form(ModelForm):
 
     max_bid = 0
 
     #Constructeur pour pouvoir passer une requête et un bid max éventuels pour récupérer le max bid pour l'auction du contexte
-    def __init__(self, request=None, max=0):
+    def __init__(self, request=None, max=0, base_price=0):
         super().__init__(request)
         self.max_bid = max
+        self.base_price = base_price
 
     def clean(self):
         cleaned_data=super(Bid_Form, self).clean()
         if self.max_bid >= cleaned_data.get("amount"):
             raise ValidationError("The amount must be superior to max bid")
+        if self.base_price >= cleaned_data.get("amount"):
+            raise ValidationError("The amount must be superior to the listing base price")
         
     class Meta:
         model = Bid
