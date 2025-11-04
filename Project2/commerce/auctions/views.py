@@ -80,7 +80,9 @@ def new_listing(request):
     if request.method == 'POST':
         form = Auction_Listing_Form(request.POST)
         if form.is_valid():
-            form.save()
+            user_listing = form.save(commit=False)
+            user_listing.user = request.user
+            user_listing.save()
             return redirect('index')
     else:
         form = Auction_Listing_Form()
@@ -225,8 +227,6 @@ def closeAuction(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
     listing_instance.auction_open = False
     listing_instance.save()
-    print(listing_instance.auction_open)
-    print("coucou")
     current_user = request.user
     return render(request, "auctions/listings.html", {
     "listings": Auction_Listing.objects.all(),

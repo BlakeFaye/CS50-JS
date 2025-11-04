@@ -3,11 +3,9 @@ from .models import Auction_Listing, User, Bid
 from django.db import models  
 
 class Auction_Listing_Form(ModelForm):
-    user = ModelChoiceField(queryset=User.objects.all())
-
     class Meta:
         model = Auction_Listing
-        fields = ["title", "price", "user", "category", "description", "picture"]
+        fields = ["title", "price", "category", "description", "picture"]
 
 class Auction_Listing_Form_RO(ModelForm):
     class Meta:
