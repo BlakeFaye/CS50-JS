@@ -9,7 +9,7 @@
                     <br/>
                     <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">                       
                     
-                    {% if listing.user == current_user %}
+                    {% if listing.user == current_user and listing.auction_open is True %}
                         <a href="{% url 'edit_listing' listing.id %}">Edit listing</a>  
                     {% else %}    
                         <a href="{% url 'listing' listing.id %}">View listing</a>    

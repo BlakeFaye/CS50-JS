@@ -2,14 +2,29 @@
 
 {% block body %}
     <h2>Edit auction listing</h2>
+    {% if auction_open is False %}
+    <b>This auction is closed</b>
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         {{ listing_form.errors }}
         {{ listing_form.non_field_errors }}
         {{ listing_form.as_p }}
-    <button type="submit" class="btn btn-success">Save</button>
+    {% if auction_open is True %}  
+        <button type="submit" class="btn btn-success">Save</button>
+    {%endif%}
     </form>
 
     Max bid for this listing is: ${{ max_bid }}
+
+    {% if auction_open is True %}
+    <form action="{% url 'closeAuction' auction_id %}" method="post">
+        {% csrf_token %} 
+        <button type="submit" id="close_auction_button" class="btn btn-outline-primary" style="width: 150px">Close the auction</button>
+        </form>
+    {% endif %}
+
+  
 
 {% endblock %}

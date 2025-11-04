@@ -2,6 +2,9 @@
 
 {% block body %}
     <h2>View auction listing</h2>
+    {% if auction_open is False %}
+    <b>This auction is closed</b>
+    {% endif %}
     <form method="GET">
         {% csrf_token %}
         {{ listing_form.errors }}
@@ -10,6 +13,8 @@
     </form>
 
     Bidding </br>
+
+    {% if auction_open is True %}
     Max bid for this listing is: ${{ max_bid }}
     Your biggest bid for this listing is: ${{ user_max_bid }}
     <form method="POST">
@@ -18,6 +23,10 @@
         {{ bid_form.as_p }}
         <button type="submit" class="btn btn-success">Place bid</button>       
     </form>
+
+    {% else %}
+    The final bid is ${{max_bid}}
+    {% endif %}
 
     {% if is_watchlisted %}
         <form action="{% url 'removeWatchlist' auction_id %}" method="post">
