@@ -5,7 +5,7 @@
         <ul>
             {% for listing in watchlist_listings %}
                 <li>
-                    <a href="{% url 'edit_listing' listing.auctions.id %}">
+                    <a href="{% url 'listing' listing.auctions.id %}">
                         Item number {{ listing.id }} : {{ listing.auctions.title }}, ${{ listing.auctions.price }}
                         <br/>
                         <img src="{{ listing.auctions.picture }}" alt="Picture of the listing" style= "max-width:10%">

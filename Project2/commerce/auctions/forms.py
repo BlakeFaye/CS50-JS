@@ -7,6 +7,7 @@ class Auction_Listing_Form(ModelForm):
         model = Auction_Listing
         fields = ["title", "price", "category", "description", "picture"]
 
+
 class Auction_Listing_Form_RO(ModelForm):
     class Meta:
         model = Auction_Listing
@@ -21,8 +22,8 @@ class Auction_Listing_Form_RO(ModelForm):
         self.fields["description"].disabled = True
         self.fields["picture"].disabled = True
 
-class Bid_Form(ModelForm):
 
+class Bid_Form(ModelForm):
     max_bid = 0
 
     #Constructeur pour pouvoir passer une requête et un bid max éventuels pour récupérer le max bid pour l'auction du contexte

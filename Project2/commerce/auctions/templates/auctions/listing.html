@@ -1,44 +1,65 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>View auction listing</h2>
+    <h2>Listing auction detail</h2>
     {% if auction_open is False %}
     <b>This auction is closed</b>
     {% endif %}
-    <form method="GET">
+
+    {% if auction_open and user_is_creator %}
+        <form method="POST">
         {% csrf_token %}
         {{ listing_form.errors }}
         {{ listing_form.non_field_errors }}
         {{ listing_form.as_p }}
+        <input type="button" class="btn btn-success" name="save_listing" value = "Save listing"></input>
     </form>
 
-    Bidding </br>
+    {% else %}
+        <form method="GET">
+            {% csrf_token %}
+            {{ listing_form.errors }}
+            {{ listing_form.non_field_errors }}
+            {{ listing_form.as_p }}
+        </form>
+    {%endif%}
 
-    {% if auction_open is True %}
+    <h3>Bidding</h3>
+
+    {% if auction_open %}
     Max bid for this listing is: ${{ max_bid }}
-    Your biggest bid for this listing is: ${{ user_max_bid }}
-    <form method="POST">
-        {% csrf_token %}
 
-        {{ bid_form.as_p }}
-        <button type="submit" class="btn btn-success">Place bid</button>       
-    </form>
+        {% if user_is_creator %}
+            <form action="{% url 'closeAuction' auction_id %}" method="post">
+                {% csrf_token %} 
+                <input type="submit" id="close_auction_button" class="btn btn-outline-primary" style="width: 150px" value = "Close auction"></input>
+            </form>
+
+        {% else %}
+            Your biggest bid for this listing is: ${{ user_max_bid }}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ bid_form.as_p }}
+                    <input type="submit" class="btn btn-success" name="place_bid" value = "Place bid"></input>       
+                </form>
+                {% if is_watchlisted %}
+                    <form action="{% url 'removeWatchlist' auction_id %}" method="post">
+                        {% csrf_token %} 
+                        <input type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px" value = "Remove from Watchlist"></input>
+                    </form>
+                {% else %}
+                <form action="{% url 'addWatchlist' auction_id %}" method="post">
+                    {% csrf_token %} 
+                    <input type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px" value = "Add to Watchlist"></input>
+                </form>
+                {% endif %}
+        {% endif %}
 
     {% else %}
-    The final bid is ${{max_bid}}
+        The final bid is ${{max_bid}}
     {% endif %}
 
-    {% if is_watchlisted %}
-        <form action="{% url 'removeWatchlist' auction_id %}" method="post">
-        {% csrf_token %} 
-        <button type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px">Remove from Watchlist</button>
-        </form>
 
-    {% else %}
-        <form action="{% url 'addWatchlist' auction_id %}" method="post">
-        {% csrf_token %} 
-        <button type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px">Add to Watchlist</button>
-        </form>
-    {% endif %}
+    
 
 {% endblock %}
