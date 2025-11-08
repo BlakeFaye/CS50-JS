@@ -94,9 +94,18 @@ def listing(request, auction_id):
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
 
     bids = Bid.objects.filter(listing=listing_instance)
-    max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
-    user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
-    
+    #Initialisation des valeurs car on a besoin de leur donner une valeur par défaut car
+    #tests impossibles si comparé avec du rien (cas où auction closed sans aucun bid)
+    current_user_is_winner = False
+    user_max_bid = 0
+    max_bid = 0
+    user_of_the_max_bid = ''
+
+    if bids.exists():
+        max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
+        user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
+        user_of_the_max_bid = bids.order_by("amount")[:1].get().user
+
     current_auction_is_open = listing_instance.auction_open
     
     #récup du user
@@ -130,7 +139,7 @@ def listing(request, auction_id):
         
         #Vérif du submit du bid_form
         if 'place_bid' in request.POST :
-             #Validation du bid
+            #Validation du bid
             if bid_form.is_valid():
                 print("2")
                 user_bid = bid_form.save(commit=False)
@@ -143,8 +152,8 @@ def listing(request, auction_id):
                 context["bid_form"] = bid_form
 
         #Vérif du submit du listing_form
-        #Validation de l'édit du listing
         if 'save_listing' in request.POST :
+            #Validation de l'édit du listing
             if listing_form.is_valid():
                 print("4")
                 listing_form.save()
@@ -163,7 +172,7 @@ def listing(request, auction_id):
         context = {
                 'listing_form': listing_form_ro,
                 'id': id, 'auction_id':auction_id, 'auction_open':current_auction_is_open, 'user_is_creator':current_user_is_creator,
-                'max_bid' : max_bid}
+                'max_bid' : max_bid, 'current_user_is_winner':current_user_is_winner}
         
         # Cas 1 : Pour modifer son auction encore ouverte
         if current_user_is_creator and current_auction_is_open: 
@@ -178,7 +187,10 @@ def listing(request, auction_id):
 
         # Cas 3 : Le + de restrictions, auction fermée normalement, on peut juste consulter
         else:
+            if user_of_the_max_bid == request.user:
+                current_user_is_winner = True
             context["is_watchlisted"] =  is_watchlisted
+            context["current_user_is_winner"] =  current_user_is_winner
     
         return render(request,'auctions/listing.html', context)
         

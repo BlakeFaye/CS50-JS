@@ -56,7 +56,11 @@
         {% endif %}
 
     {% else %}
+        {% if current_user_is_winner %}
+        You won the auction with a ${{max_bid}} bid!
+        {% else %}
         The final bid is ${{max_bid}}
+        {% endif %}
     {% endif %}
 
 
