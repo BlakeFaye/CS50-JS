@@ -42,17 +42,6 @@
                     {{ bid_form.as_p }}
                     <input type="submit" class="btn btn-success" name="place_bid" value = "Place bid"></input>       
                 </form>
-                {% if is_watchlisted %}
-                    <form action="{% url 'removeWatchlist' auction_id %}" method="post">
-                        {% csrf_token %} 
-                        <input type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px" value = "Remove from Watchlist"></input>
-                    </form>
-                {% else %}
-                <form action="{% url 'addWatchlist' auction_id %}" method="post">
-                    {% csrf_token %} 
-                    <input type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px" value = "Add to Watchlist"></input>
-                </form>
-                {% endif %}
         {% endif %}
 
     {% else %}
@@ -63,6 +52,17 @@
         {% endif %}
     {% endif %}
 
+{% if not user_is_creator %}
+    <form action="{% url 'removeWatchlist' auction_id %}" method="post">
+        {% csrf_token %} 
+        <input type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px" value = "Remove from Watchlist"></input>
+    </form>
+    {% else %}
+    <form action="{% url 'addWatchlist' auction_id %}" method="post">
+        {% csrf_token %} 
+        <input type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px" value = "Add to Watchlist"></input>
+    </form>
+{% endif %}
 
     
 
