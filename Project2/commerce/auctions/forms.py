@@ -1,6 +1,5 @@
-from django.forms import ModelForm, ModelChoiceField, Form, ValidationError
-from .models import Auction_Listing, User, Bid
-from django.db import models  
+from django.forms import ModelForm, ValidationError
+from .models import Auction_Listing, Bid, Comment
 
 class Auction_Listing_Form(ModelForm):
     class Meta:
@@ -43,3 +42,7 @@ class Bid_Form(ModelForm):
         model = Bid
         fields = ["amount"]
 
+class Comment_Form(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content"]

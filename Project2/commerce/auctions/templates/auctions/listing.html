@@ -6,6 +6,21 @@
     <b>This auction is closed</b>
     {% endif %}
 
+    {% if not user_is_creator %}
+        {% if is_watchlisted %}
+        <form action="{% url 'removeWatchlist' auction_id %}" method="post">
+            {% csrf_token %} 
+            <input type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px" value = "Remove from Watchlist"></input>
+        </form>
+        {% else %}
+            c
+        <form action="{% url 'addWatchlist' auction_id %}" method="post">
+            {% csrf_token %} 
+            <input type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px" value = "Add to Watchlist"></input>
+        </form>
+        {% endif %}
+    {% endif %}
+
     {% if auction_open and user_is_creator %}
         <form method="POST">
         {% csrf_token %}
@@ -44,26 +59,35 @@
                 </form>
         {% endif %}
 
-    {% else %}
-        {% if current_user_is_winner %}
-        You won the auction with a ${{max_bid}} bid!
         {% else %}
-        The final bid is ${{max_bid}}
+            {% if current_user_is_winner %}
+            You won the auction with a ${{max_bid}} bid!
+            {% else %}
+            The final bid is ${{max_bid}}
+            {% endif %}
         {% endif %}
+
+    <h3>Comments</h3>
+    
+    {% if comments %}
+        {% for comment in comments %}
+        By {{comment.user}} on {{comment.date}}
+        </br>
+        {{comment.content}}
+        </br>
+        </br>
+        {% endfor %}
+    {% else %}
+        No comments on this auction listing
     {% endif %}
 
-{% if not user_is_creator %}
-    <form action="{% url 'removeWatchlist' auction_id %}" method="post">
-        {% csrf_token %} 
-        <input type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px" value = "Remove from Watchlist"></input>
-    </form>
-    {% else %}
-    <form action="{% url 'addWatchlist' auction_id %}" method="post">
-        {% csrf_token %} 
-        <input type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px" value = "Add to Watchlist"></input>
-    </form>
-{% endif %}
-
-    
-
+    {% if auction_open %}
+        <h4>Add a comment</h4>
+        <form method="POST">
+            {% csrf_token %}
+            {{ comment_form.errors }}
+            {{ comment_form.non_field_errors }}
+            {{ comment_form.as_p }}
+            <input type="submit" class="btn btn-success" name="add_comment" value = "Add comment"></input> 
+        {% endif %}
 {% endblock %}

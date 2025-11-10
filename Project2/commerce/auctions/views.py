@@ -1,14 +1,14 @@
 from django.contrib.auth import authenticate, login, logout, get_user
 from django.db import IntegrityError
 from django.db.models import Max
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from django.core.exceptions import ValidationError
 
 from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
-from .forms import Auction_Listing_Form, Bid_Form, Auction_Listing_Form_RO
+from .forms import Auction_Listing_Form, Bid_Form, Auction_Listing_Form_RO, Comment_Form
 
 
 def index(request):
@@ -90,16 +90,17 @@ def new_listing(request):
 
 
 def listing(request, auction_id):
+    #Initialisation des valeurs 
+    current_user_is_winner = False
+    user_max_bid = 0
+    max_bid = 0
+    user_of_the_max_bid = None
+    bid_form = None
+
     #Setup des variables
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
-
     bids = Bid.objects.filter(listing=listing_instance)
-    #Initialisation des valeurs car on a besoin de leur donner une valeur par défaut car
-    #tests impossibles si comparé avec du rien (cas où auction closed sans aucun bid)
-    # current_user_is_winner = False
-    # user_max_bid = 0
-    # max_bid = 0
-    # user_of_the_max_bid = ''
+    comments = Comment.objects.filter(listing=listing_instance)
 
     if bids.exists():
         max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
@@ -124,21 +125,21 @@ def listing(request, auction_id):
 
     #initialisation des formulaires
     
-
     listing_form = Auction_Listing_Form(request.POST, instance=listing_instance)  
     listing_form_ro = Auction_Listing_Form_RO(request.GET, instance=listing_instance)  
+    comment_form = Comment_Form(request.POST)
 
     if request.method == 'POST':
 
         context = {
             'listing_form': listing_form_ro, 
-            'bid_form': Bid_Form(),
+            'bid_form': Bid_Form(), 'comment_form': Comment_Form(),
             'id': id, 'auction_id':auction_id, 'auction_open':current_auction_is_open, 'user_is_creator':current_user_is_creator,
             'is_watchlisted':is_watchlisted,
             'max_bid' : max_bid, 'user_max_bid':user_max_bid}
         
         #Vérif du submit du bid_form
-        if 'place_bid' in request.POST :
+        if 'place_bid' in request.POST:
             #Validation du bid
             if bid_form.is_valid():
                 user_bid = bid_form.save(commit=False)
@@ -150,13 +151,25 @@ def listing(request, auction_id):
                 context["bid_form"] = bid_form
 
         #Vérif du submit du listing_form
-        if 'save_listing' in request.POST :
+        if 'save_listing' in request.POST:
             #Validation de l'édit du listing
             if listing_form.is_valid():
                 listing_form.save()
                 return redirect('listing', auction_id=auction_id)
             else:
                 context["listing_form"] = listing_form_ro
+        
+        #Vérif du submit du comment_form
+        if 'add_comment' in request.POST:
+            if comment_form.is_valid():
+                user_comment = comment_form.save(commit=False)
+                user_comment.user = request.user
+                user_comment.listing = listing_instance
+                user_comment.save()
+                return redirect('listing', auction_id=auction_id)
+            else:
+                context["comment_form"] = comment_form
+                
 
         #Si l'un ou l'autre n'est pas bon, réafficher la page en passant
         #en paramètre le form rempli pour afficher les bonnes données
@@ -164,17 +177,16 @@ def listing(request, auction_id):
         return render(request,'auctions/listing.html', context)
 
     else : #GET
-        if not bids.exists():
-            max_bid = 0
-
         context = {
                 'listing_form': listing_form_ro,
                 'id': id, 'auction_id':auction_id, 'auction_open':current_auction_is_open, 'user_is_creator':current_user_is_creator,
-                'max_bid' : max_bid}
+                'max_bid' : max_bid,
+                'comments' : comments}
         
         # Cas 1 : Pour modifer son auction encore ouverte
         if current_user_is_creator and current_auction_is_open: 
             context["listing_form"] =  Auction_Listing_Form(instance=listing_instance)
+            context["comment_form"] = Comment_Form()
 
         # Cas 2 : Pour bid sur une auction ouverte
         elif current_auction_is_open:
@@ -182,13 +194,13 @@ def listing(request, auction_id):
             context["bid_form"] =  Bid_Form()
             context["is_watchlisted"] =  is_watchlisted
             context["user_max_bid"] =  user_max_bid
+            context["comment_form"] = Comment_Form()
 
         # Cas 3 : Le + de restrictions, auction fermée normalement, on peut juste consulter
         else:
             current_user_is_winner = False
-            if bids.exists():
-                if user_of_the_max_bid == request.user:
-                    current_user_is_winner = True
+            if bids.exists() and user_of_the_max_bid == request.user:
+                current_user_is_winner = True
             context["is_watchlisted"] =  is_watchlisted
             context["current_user_is_winner"] =  current_user_is_winner
     

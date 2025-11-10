@@ -39,11 +39,11 @@ class Bid(models.Model):
 class Comment(models.Model):
     listing = models.ForeignKey(Auction_Listing, related_name="comment_listing", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="comment_user", on_delete=models.CASCADE)
-    content = models.CharField(max_length=1000)
+    content = models.TextField(max_length=1000)
     date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"ID : {self.id} {self.user} had commented on {self.lising} on the {self.date} : {self.content}"
+        return f"ID : {self.id} {self.user} had commented on {self.listing} on the {self.date} : {self.content}"
 
 
 class Watchlist(models.Model):
