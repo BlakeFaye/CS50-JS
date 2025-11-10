@@ -4,8 +4,7 @@ from django.db.models import Max
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-
-from django.core.exceptions import ValidationError
+from .models import CATEGORY_OPTIONS
 
 from .models import User, Auction_Listing, User, Comment, Bid, Watchlist
 from .forms import Auction_Listing_Form, Bid_Form, Auction_Listing_Form_RO, Comment_Form
@@ -239,4 +238,25 @@ def closeAuction(request, auction_id):
     return render(request, "auctions/listings.html", {
     "listings": Auction_Listing.objects.all(),
     'current_user':current_user
+    })
+
+
+def categories(request):
+    listings = Auction_Listing.objects.all()
+    cat_list = (list(listings.order_by().values_list("category", flat=True).distinct()))
+
+    return render(request, "auctions/categories.html", {
+        "categories": cat_list
+    })
+
+
+def category(request, cat_name):
+    listings = Auction_Listing.objects.all()
+    listings_in_cat = listings.filter(category=cat_name)
+    #Récupérer le "vrai" libellé de la catégorie
+    current_category = [item for item in CATEGORY_OPTIONS if item[0] == cat_name][0][1]
+ 
+    return render(request, "auctions/category.html", {
+        "listings": listings_in_cat,
+        "current_category": current_category
     })
