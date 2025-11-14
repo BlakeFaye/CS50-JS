@@ -1,13 +1,22 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Categories</h2>
+    <h2>All listings by category</h2>
+    
+{% for item in category_listings %}
+        <h3><a href="{% url 'category' item.0 %}">{{item.0}}</a></h3>
         <ul>
-            {% for category in categories %}
+            {% for listing in item.1 %}
                 <li>
-                    <a href="{% url 'category' category %}">{{category}}</a>
+                    Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}
+                    <br/>
+                    <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">                       
+                        <a href="{% url 'listing' listing.id %}">Access listing</a>    
+
                 </li>
-            {% endfor %}
+        {% endfor %}
         </ul>
-        
+    </br>
+{% endfor %}
+
 {% endblock %}
