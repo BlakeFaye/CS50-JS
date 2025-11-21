@@ -24,7 +24,7 @@ class Auction_Listing(models.Model):
     auction_open = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.title} by {self.user} for {self.price}. In category: {self.category} with picture: {self.picture} on the {self.date}"
+        return f"{self.id} - {self.title}"
 
 class Bid(models.Model):
     amount = models.DecimalField(max_digits=6, decimal_places=2)
