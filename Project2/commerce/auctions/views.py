@@ -245,6 +245,11 @@ def categories(request):
     listings = Auction_Listing.objects.all()
     cat_list = (list(listings.order_by().values_list("category", flat=True).distinct()))
 
+    for cat in cat_list:
+        print(cat)
+        print(listings.filter(category=cat))
+        print("_________________")
+
     return render(request, "auctions/categories.html", {
         "categories": cat_list
     })

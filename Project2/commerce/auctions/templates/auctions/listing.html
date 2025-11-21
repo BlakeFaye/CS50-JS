@@ -13,7 +13,6 @@
             <input type="submit" id="watchlistremove_button" class="btn btn-outline-primary" style="width: 150px" value = "Remove from Watchlist"></input>
         </form>
         {% else %}
-            c
         <form action="{% url 'addWatchlist' auction_id %}" method="post">
             {% csrf_token %} 
             <input type="submit" id="watchlist_button" class="btn btn-outline-primary" style="width: 150px" value = "Add to Watchlist"></input>
