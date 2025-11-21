@@ -6,7 +6,7 @@
     <b>This auction is closed</b>
     {% endif %}
 
-    {% if not user_is_creator %}
+    {% if not user_is_creator and authenticated_user %}
         {% if is_watchlisted %}
         <form action="{% url 'removeWatchlist' auction_id %}" method="post">
             {% csrf_token %} 
@@ -20,7 +20,7 @@
         {% endif %}
     {% endif %}
 
-    {% if auction_open and user_is_creator %}
+    {% if auction_open and user_is_creator and authenticated_user %}
         <form method="POST">
         {% csrf_token %}
         {{ listing_form.errors }}
@@ -43,13 +43,13 @@
     {% if auction_open %}
     Max bid for this listing is: ${{ max_bid }}
 
-        {% if user_is_creator %}
+        {% if user_is_creator and authenticated_user %}
             <form action="{% url 'closeAuction' auction_id %}" method="post">
                 {% csrf_token %} 
                 <input type="submit" id="close_auction_button" class="btn btn-outline-primary" style="width: 150px" value = "Close auction"></input>
             </form>
 
-        {% else %}
+        {% elif authenticated_user %}
             Your biggest bid for this listing is: ${{ user_max_bid }}
                 <form method="POST">
                     {% csrf_token %}
@@ -58,13 +58,13 @@
                 </form>
         {% endif %}
 
+    {% else %}
+        {% if current_user_is_winner %}
+        You won the auction with a ${{max_bid}} bid!
         {% else %}
-            {% if current_user_is_winner %}
-            You won the auction with a ${{max_bid}} bid!
-            {% else %}
-            The final bid is ${{max_bid}}
-            {% endif %}
+        The final bid is ${{max_bid}}
         {% endif %}
+    {% endif %}
 
     <h3>Comments</h3>
     
@@ -80,7 +80,7 @@
         No comments on this auction listing
     {% endif %}
 
-    {% if auction_open %}
+    {% if auction_open and authenticated_user %}
         <h4>Add a comment</h4>
         <form method="POST">
             {% csrf_token %}

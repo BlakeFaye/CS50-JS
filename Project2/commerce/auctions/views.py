@@ -11,6 +11,7 @@ from .forms import Auction_Listing_Form, Bid_Form, Auction_Listing_Form_RO, Comm
 
 
 def index(request):
+    #Pas utilisé pour le moment, l'index renvoie vers la liste des auctions
     return render(request, "auctions/index.html")
 
 
@@ -68,6 +69,7 @@ def register(request):
 
 def listings(request):
     current_user = request.user
+    print(current_user)
 
     print(Auction_Listing.objects.all())
 
@@ -97,6 +99,7 @@ def listing(request, auction_id):
     max_bid = 0
     user_of_the_max_bid = None
     bid_form = None
+    authenticated_user = request.user.is_authenticated
 
     #Setup des variables
     listing_instance = Auction_Listing.objects.get(pk=auction_id)
@@ -105,10 +108,11 @@ def listing(request, auction_id):
 
     if bids.exists():
         max_bid = list(bids.aggregate(Max("amount", default=0)).values())[0]
-        user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
-        user_of_the_max_bid = bids.order_by("amount")[:1].get().user
         listing_price = listing_instance.price
         bid_form = Bid_Form(request.POST, max_bid, listing_price)
+        if request.user.is_authenticated :      
+            user_max_bid = list(bids.filter(user=request.user).aggregate(Max("amount", default=0)).values())[0]
+            user_of_the_max_bid = bids.order_by("amount")[:1].get().user
 
     current_auction_is_open = listing_instance.auction_open
     
@@ -118,11 +122,16 @@ def listing(request, auction_id):
         current_user_is_creator = True
     
     #récup du statut de watchlist
+    
     try:
-        Watchlist.objects.get(user=request.user, auctions=listing_instance)
-        is_watchlisted = True
+        if request.user.is_authenticated:
+            Watchlist.objects.get(user=request.user, auctions=listing_instance)
+            is_watchlisted = True
+        else:
+            is_watchlisted = False
     except Watchlist.DoesNotExist:
         is_watchlisted = False
+
 
     #initialisation des formulaires
     
@@ -136,7 +145,7 @@ def listing(request, auction_id):
             'listing_form': listing_form_ro, 
             'bid_form': Bid_Form(), 'comment_form': Comment_Form(),
             'id': id, 'auction_id':auction_id, 'auction_open':current_auction_is_open, 'user_is_creator':current_user_is_creator,
-            'is_watchlisted':is_watchlisted,
+            'is_watchlisted':is_watchlisted, 'authenticated_user': authenticated_user,
             'max_bid' : max_bid, 'user_max_bid':user_max_bid}
         
         #Vérif du submit du bid_form
