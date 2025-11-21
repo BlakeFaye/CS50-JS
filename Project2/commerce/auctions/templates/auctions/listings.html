@@ -2,16 +2,28 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-        <ul>
             {% for listing in listings %}
-                <li>
-                    Item number {{ listing.id }} : {{ listing.title }}, ${{ listing.price }}
-                    <br/>
-                    <img src="{{ listing.picture }}" alt="Picture of the listing" style= "max-width:10%">                       
-                        <a href="{% url 'listing' listing.id %}">Access listing</a>    
 
-                </li>
+                <a href="{% url 'listing' listing.id %}"></a>
+                    <div class = "card" style = "max-width: 80%;">
+                        <img class="card-img-top" src="{{ listing.picture }}" alt="Picture of the listing">
+                        <div class="card-body">
+                            <p class="card-title">
+                                {{ listing.title }}
+                            </p>
+                            <p class="card-text">
+                                ${{ listing.price }}
+                            </p>
+                            <p class="card-text">
+                                ${{ listing.price }}
+                            </p>
+                            <p class="card-text">
+                                ${{ listing.date }}
+                            </p>
+                        </div>
+                    </div>
+                </a> 
+
             {% endfor %}
-        </ul>
         
 {% endblock %}

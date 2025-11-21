@@ -1,3 +1,41 @@
 body {
     padding: 10px;
 }
+
+.container{
+    border-color: blue;
+    border-radius:15px;
+}
+
+.row{
+    border-radius:5px;
+    padding:1%;
+    margin:1%;
+}
+
+.picture{
+}
+
+.description{
+
+}
+
+.title{
+
+}
+
+.price{
+
+}
+
+.item_desc{
+
+}
+
+.date_time{
+
+}
+
+
+
+
