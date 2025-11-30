@@ -2,28 +2,41 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-            {% for listing in listings %}
 
-                <a href="{% url 'listing' listing.id %}"></a>
-                    <div class = "card" style = "max-width: 80%;">
-                        <img class="card-img-top" src="{{ listing.picture }}" alt="Picture of the listing">
+            {% for listing in listings %}
+            <div class="container py-3">
+                <a href="{% url 'listing' listing.id %}">
+                    <div class = "card">
                         <div class="card-body">
-                            <p class="card-title">
-                                {{ listing.title }}
-                            </p>
-                            <p class="card-text">
-                                ${{ listing.price }}
-                            </p>
-                            <p class="card-text">
-                                ${{ listing.price }}
-                            </p>
-                            <p class="card-text">
-                                ${{ listing.date }}
-                            </p>
+                            <div class="row">
+                                <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                    <img class="card-img-top" src="{{ listing.picture }}" alt="Picture of the listing">
+                                </div>
+                                <div class="col-md-6 col-lg-6 col-xl-6">
+                                    <h2 class="card-title">
+                                        {{ listing.title }}
+                                    </h2>
+                                    <div class="mt-3 mb-4 text-dark md">
+                                        <span>
+                                            <b>Price:</b> ${{ listing.price }}
+                                        </span>
+                                    <div class="mt-3 mb-4 text-dark md">
+                                        <span>
+                                            {{ listing.description }}
+                                        </span>
+                                    </div>
+                                    </div>
+                                    <div class="mt-4 mb-4 text-muted small">
+                                        <span>
+                                            Created {{ listing.date }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </a> 
-
+            </div>
             {% endfor %}
         
 {% endblock %}

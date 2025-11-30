@@ -13,15 +13,12 @@ body {
     margin:1%;
 }
 
-.picture{
+.card-container-blake{
+    background-color: blue;
 }
 
-.description{
-
-}
-
-.title{
-
+h3.card-subtitle{
+    background-color:blue;
 }
 
 .price{
