@@ -40,6 +40,7 @@ function load_mailbox(mailbox) {
   .then(email => {
     // Print email
     console.log(email);
+    document.createElement("h4").innerHTML = email
   }
   )
 }
