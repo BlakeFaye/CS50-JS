@@ -31,66 +31,23 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-  //get a list with mail ids
-  const mail_id_list = []
-
-  for (let i = 1; i<10; i++) //i<100 T-T
-    {
-      
-      fetch(`/emails/${i}`)
-      .then(response => response.json())
-      .then(email => {
-      
-      //console.log(email.hasOwnProperty("error"));
-      if (!email.hasOwnProperty("error")){
-        mail_id_list.push(i);
-        
+  fetch('/emails/inbox')
+    .then(response => response.json())
+    .then(email => {
+      if (email.length == 0) {
+        document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  + "No mails to display"
       }
-    })
-      }
-
-console.log(mail_id_list);
-
-
-  for (i in mail_id_list) 
-    {
-      console.log("BBBB");
-      console.log(i)
-      fetch(`/emails/${i}`)
-      .then(response => response.json())
-      .then(email => {
-      
-        
-      console.log("AAAAAAAAAA");
-      console.log(email);
-      console.log(i);
-    })
-      }
-
-  console.log("CCCC");
-  fetch('/emails/1')
-  .then(response => response.json())
-  .then(email => {
-    console.log("DDDD");
-    console.log(email);   
-
-    //if error key found in returned JSON print it
-    if (email.hasOwnProperty("error")){ 
-      console.log(email.error);
-      document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML + "Error: " + email.error;
-    }
-    //otherwise, print mails
-    else { 
-      const mel = email;
-      const read = "No";
-      const archived = "No";
-      if (mel.read) {
-        read = "Yes"
-      }
-      if (mel.archived) {
-        read = "Yes"
-      }
-
+      for (let i = 0; i < email.length ; i++) {
+        console.log(email[i])
+        const mel = email[i];
+        const read = "No";
+        const archived = "No";
+        if (mel.read) {
+          read = "Yes"
+        }
+        if (mel.archived) {
+          read = "Yes"
+        }
       document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
       `<p> Subject : ${mel.subject}</p>
       <p> Sender : ${mel.sender}</p>
@@ -99,8 +56,9 @@ console.log(mail_id_list);
       <p> Read? : ${read} | Archived? : ${archived}</p>
       ____________
       `
+      }
+    })
+
+
     }
-    document.createElement("h4").innerHTML = email
-  }
-  )
-}
+  
