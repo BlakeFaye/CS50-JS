@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function compose_email() {
-
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
@@ -20,6 +19,26 @@ function compose_email() {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+  
+  document.querySelector('#compose-form').onsubmit = () => {
+    console.log("BB"); //ce log ne s'affiche pas ??
+    const new_mail_recipients = document.querySelector('#compose-recipients').value;
+    const new_mail_subject = document.querySelector('#compose-subject').value;
+    const new_mail_body = document.querySelector('#compose-body').value;
+    console.log(new_mail_recipients);
+    console.log("AA"); // mais celui-là oui
+    fetch('/emails',{
+      method: "POST",
+      body: JSON.stringify({
+        recipients: new_mail_recipients,
+        subject: new_mail_subject,
+        body: new_mail_body
+      })
+    })
+    .then(response => response.json())
+    .then(resp => console.log(resp))
+    };
+
 }
 
 function load_mailbox(mailbox) {
