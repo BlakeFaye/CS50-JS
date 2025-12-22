@@ -19,14 +19,27 @@ function compose_email() {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
-  
-  document.querySelector('#compose-form').onsubmit = () => {
-    console.log("BB"); //ce log ne s'affiche pas ??
+
+  console.log("ZZ");
+
+  document.querySelector('#submit-compose-form').onclick = () => {
+    // console.log("Ce log s'affiche que si on a un query selector en dehors de la fonction avant"); //ce log ne s'affiche pas ??
+    // console.log("Birmingham");
     const new_mail_recipients = document.querySelector('#compose-recipients').value;
     const new_mail_subject = document.querySelector('#compose-subject').value;
     const new_mail_body = document.querySelector('#compose-body').value;
-    console.log(new_mail_recipients);
-    console.log("AA"); // mais celui-là oui
+
+    console.log (new_mail_recipients); // besoin de cette ligne pour que la ligne 33 soit exécutée ???
+    console.log (new_mail_subject);
+    console.log (new_mail_recipients);
+    console.log (new_mail_body);
+
+    var recs = new_mail_recipients.split(", ");
+    console.log(recs);
+
+    // TODO : event.preventDefault empêcherait l'exécution du fetch
+    // https://cs50.stackexchange.com/questions/43868/cs50w-mail-javascript-function-only-working-on-chrome
+    // https://stackoverflow.com/questions/7056669/how-to-prevent-default-event-handling-in-an-onclick-method
     fetch('/emails',{
       method: "POST",
       body: JSON.stringify({
@@ -36,13 +49,15 @@ function compose_email() {
       })
     })
     .then(response => response.json())
-    .then(resp => console.log(resp))
+    .then(result => console.log(result))
     };
 
+    console.log("ZZ")
 }
 
 function load_mailbox(mailbox) {
  
+  console.log("beginning of load_mailbox")
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
