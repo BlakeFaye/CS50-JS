@@ -20,16 +20,11 @@ function compose_email() {
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
 
-  console.log("ZZ");
-
   document.querySelector('#submit-compose-form').onclick = () => {
-    // console.log("Ce log s'affiche que si on a un query selector en dehors de la fonction avant"); //ce log ne s'affiche pas ??
-    // console.log("Birmingham");
     const new_mail_recipients = document.querySelector('#compose-recipients').value;
     const new_mail_subject = document.querySelector('#compose-subject').value;
     const new_mail_body = document.querySelector('#compose-body').value;
 
-    console.log (new_mail_recipients); // besoin de cette ligne pour que la ligne 33 soit exécutée ???
     console.log (new_mail_subject);
     console.log (new_mail_recipients);
     console.log (new_mail_body);
@@ -51,8 +46,6 @@ function compose_email() {
     .then(response => response.json())
     .then(result => console.log(result))
     };
-
-    console.log("ZZ")
 }
 
 function load_mailbox(mailbox) {
@@ -65,6 +58,8 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
+  console.log("mailbox: " + mailbox)
+
   fetch('/emails/inbox')
     .then(response => response.json())
     .then(email => {
@@ -74,22 +69,48 @@ function load_mailbox(mailbox) {
       for (let i = 0; i < email.length ; i++) {
         console.log(email[i])
         const mel = email[i];
-        const read = "No";
-        const archived = "No";
-        if (mel.read) {
-          read = "Yes"
-        }
-        if (mel.archived) {
-          read = "Yes"
-        }
-      document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
+        //TODO : transcoder les true/false des read et archived
+        // const read = "No";
+        // const archived = "No";
+        // if (mel.read) {
+        //   read = "Yes"
+        // }
+        // if (mel.archived) {
+        //   read = "Yes"
+        // }
+        console.log("sent " + mel.sent + " " + mel.id)
+        console.log("archived " + mel.archived + " " + mel.id)
+        console.log("mailbox " + mailbox)
+        if (mailbox = 'sent' && mel.sent) {
+           document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
       `<p> Subject : ${mel.subject}</p>
       <p> Sender : ${mel.sender}</p>
       <p> Timestamp : ${mel.timestamp}</p>
       <p> Body : ${mel.body}</p>
-      <p> Read? : ${read} | Archived? : ${archived}</p>
+      <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
       ____________
       `
+        }
+        else if (mailbox = 'archive' && mel.archived) {
+           document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
+      `<p> Subject : ${mel.subject}</p>
+      <p> Sender : ${mel.sender}</p>
+      <p> Timestamp : ${mel.timestamp}</p>
+      <p> Body : ${mel.body}</p>
+      <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
+      ____________
+      `
+        }
+        else {
+          document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
+      `<p> Subject : ${mel.subject}</p>
+      <p> Sender : ${mel.sender}</p>
+      <p> Timestamp : ${mel.timestamp}</p>
+      <p> Body : ${mel.body}</p>
+      <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
+      ____________
+      `
+        }
       }
     })
 
