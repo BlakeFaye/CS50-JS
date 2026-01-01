@@ -32,9 +32,7 @@ function compose_email() {
     var recs = new_mail_recipients.split(", ");
     console.log(recs);
 
-    // TODO : event.preventDefault empêcherait l'exécution du fetch
-    // https://cs50.stackexchange.com/questions/43868/cs50w-mail-javascript-function-only-working-on-chrome
-    // https://stackoverflow.com/questions/7056669/how-to-prevent-default-event-handling-in-an-onclick-method
+    // pour que ça fonctionne, il faut désactiver ublock et abp
     fetch('/emails',{
       method: "POST",
       body: JSON.stringify({
@@ -50,39 +48,29 @@ function compose_email() {
 
 function load_mailbox(mailbox) {
  
-  console.log("beginning of load_mailbox")
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
+  // help : https://github.com/kazimovzaman2/CS50w-Mail/blob/main/mail/static/mail/inbox.js
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
   console.log("mailbox: " + mailbox)
 
-  fetch('/emails/inbox')
+  fetch(`/emails/${mailbox}`)
     .then(response => response.json())
-    .then(email => {
+    .then(email =>
+      {
       if (email.length == 0) {
         document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  + "No mails to display"
       }
       for (let i = 0; i < email.length ; i++) {
         console.log(email[i])
         const mel = email[i];
-        //TODO : transcoder les true/false des read et archived
-        // const read = "No";
-        // const archived = "No";
-        // if (mel.read) {
-        //   read = "Yes"
-        // }
-        // if (mel.archived) {
-        //   read = "Yes"
-        // }
-        console.log("sent " + mel.sent + " " + mel.id)
-        console.log("archived " + mel.archived + " " + mel.id)
-        console.log("mailbox " + mailbox)
-        if (mailbox = 'sent' && mel.sent) {
-           document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
+    
+        const single_mail = document.createElement('div');
+        single_mail.innerHTML = 
       `<p> Subject : ${mel.subject}</p>
       <p> Sender : ${mel.sender}</p>
       <p> Timestamp : ${mel.timestamp}</p>
@@ -90,29 +78,10 @@ function load_mailbox(mailbox) {
       <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
       ____________
       `
-        }
-        else if (mailbox = 'archive' && mel.archived) {
-           document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
-      `<p> Subject : ${mel.subject}</p>
-      <p> Sender : ${mel.sender}</p>
-      <p> Timestamp : ${mel.timestamp}</p>
-      <p> Body : ${mel.body}</p>
-      <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
-      ____________
-      `
-        }
-        else {
-          document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  +  
-      `<p> Subject : ${mel.subject}</p>
-      <p> Sender : ${mel.sender}</p>
-      <p> Timestamp : ${mel.timestamp}</p>
-      <p> Body : ${mel.body}</p>
-      <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
-      ____________
-      `
-        }
+      document.querySelector('#emails-view').append(single_mail);
       }
-    })
+    }
+  )
 
 
     }
