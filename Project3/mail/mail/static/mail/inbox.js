@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#single-mail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
   // Clear out composition fields
@@ -46,10 +47,50 @@ function compose_email() {
     };
 }
 
+function view_mail(mail_id){
+  console.log (mail_id)
+
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#single-mail-view').style.display = 'block';
+  document.querySelector('#compose-view').style.display = 'none';
+
+  fetch(`/emails/${mail_id}`)
+    .then(response => response.json())
+    .then(email => {
+      console.log(email)
+        document.querySelector('#single-mail-view').innerHTML = 
+      `
+      <p> Single email view </p>
+      <p> Subject : ${email.subject}</p>
+      <p> Sender : ${email.sender}</p>
+      <p> Timestamp : ${email.timestamp}</p>
+      <p> Body : ${email.body}</p>
+      <p> Read? : ${email.read} | Archived? : ${email.archived}</p>
+      <p> BBBBBBB </p>
+      `;
+
+    if (!email.read){
+      fetch(`/emails/${mail_id}`,{
+      method: "PUT",
+      body: JSON.stringify({
+        read: true
+      })
+      }
+    )
+    }
+
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#single-mail-view').style.display = 'block';
+    document.querySelector('#compose-view').style.display = 'none';
+    }
+  )
+}
+
 function load_mailbox(mailbox) {
  
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#single-mail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
@@ -58,16 +99,17 @@ function load_mailbox(mailbox) {
 
   console.log("mailbox: " + mailbox)
 
+
   fetch(`/emails/${mailbox}`)
     .then(response => response.json())
-    .then(email =>
+    .then(emails =>
       {
-      if (email.length == 0) {
+      if (emails.length == 0) {
         document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  + "No mails to display"
       }
-      for (let i = 0; i < email.length ; i++) {
-        console.log(email[i])
-        const mel = email[i];
+      for (let i = 0; i < emails.length ; i++) {
+        console.log(emails[i])
+        const mel = emails[i];
     
         const single_mail = document.createElement('div');
         single_mail.innerHTML = 
@@ -78,11 +120,17 @@ function load_mailbox(mailbox) {
       <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
       ____________
       `
+      if (mel.read) {
+        single_mail.className = "read"
+      };
+
+      single_mail.addEventListener('click', function() {
+        view_mail(mel.id)
+      })
+
       document.querySelector('#emails-view').append(single_mail);
       }
     }
   )
-
-
     }
   
