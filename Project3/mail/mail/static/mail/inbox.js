@@ -159,29 +159,34 @@ function load_mailbox(mailbox) {
       if (emails.length == 0) {
         document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  + "No mails to display"
       }
-      for (let i = 0; i < emails.length ; i++) {
-        console.log(emails[i])
-        const mel = emails[i];
-    
-        const single_mail = document.createElement('div');
-        single_mail.innerHTML = 
-      `<p> Subject : ${mel.subject}</p>
-      <p> Sender : ${mel.sender}</p>
-      <p> Recipients : ${mel.recipients}</p>
-      <p> Timestamp : ${mel.timestamp}</p>
-      <p> Body : ${mel.body}</p>
-      <p> Read? : ${mel.read} | Archived? : ${mel.archived}</p>
-      ____________
-      `
-      if (mel.read) {
-        single_mail.className = "read"
-      };
+      else {
+      const entire_table = document.createElement('table');
+      entire_table.className = 'mail_table';
 
-      single_mail.addEventListener('click', function() {
-        view_mail(mel.id)
-      })
+        for (let i = 0; i < emails.length ; i++) {
+          console.log(emails[i])
+          const mel = emails[i];  
+          
+          const single_mail = document.createElement('tr');
+          single_mail.className = 'mail_line';
 
-      document.querySelector('#emails-view').append(single_mail);
+          single_mail.innerHTML = 
+            `<td><b> ${mel.sender}</b></td>
+            <td> ${mel.subject}</td>
+            <td> ${mel.timestamp}</td>
+            `
+          entire_table.appendChild(single_mail)
+
+          if (mel.read) {
+            single_mail.className = "read"
+          };
+
+          single_mail.addEventListener('click', function() {
+            view_mail(mel.id)
+          })
+
+          document.querySelector('#emails-view').append(entire_table);
+        }
       }
     }
   )

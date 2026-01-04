@@ -6,7 +6,10 @@ textarea {
     background-color: lightgray;
 }
 
-.unread {
-    background-color: white;
+.mail_table{
+    border: 1px solid;
 }
 
+.mail_line{
+    background-color: blue;
+}
