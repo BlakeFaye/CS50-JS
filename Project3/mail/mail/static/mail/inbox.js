@@ -111,8 +111,27 @@ function view_mail(mail_id){
         })
       }
       
-      
+      //Reply logic
+      const reply_button = document.createElement('button');
+      reply_button.innerHTML = "Reply";
+      reply_button.addEventListener('click', function() {
+        compose_email()
+        document.getElementById('page_title').innerHTML  = 'Reply';
+        if (email.subject.substring(0,3) == 'Re:')
+        {
+          console.log("AA");
+          document.querySelector('#compose-subject').value = email.subject;
+        }
+        else{
+          console.log("B")
+          document.querySelector('#compose-subject').value = 'Re: ' + email.subject;
+        }
+        document.querySelector('#compose-recipients').value = email.recipients;
+        document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: \r\n${email.body}`;
+      })
+
     document.querySelector('#single-mail-view').append(archive_button);
+    document.querySelector('#single-mail-view').append(reply_button);
     document.querySelector('#emails-view').style.display = 'none';
     document.querySelector('#single-mail-view').style.display = 'block';
     document.querySelector('#compose-view').style.display = 'none';
