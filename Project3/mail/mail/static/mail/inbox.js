@@ -31,7 +31,6 @@ function compose_email() {
 
     //Get a list of all recipients
     var recs = new_mail_recipients.split(", ");
-    console.log(recs);
     
     fetch('/emails',{
       method: "POST",
@@ -48,8 +47,6 @@ function compose_email() {
 
 
 function view_mail(mail_id){
-  console.log (mail_id)
-
   //Display the mail viewer and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#single-mail-view').style.display = 'block';
@@ -119,11 +116,9 @@ function view_mail(mail_id){
         document.getElementById('page_title').innerHTML  = 'Reply';
         if (email.subject.substring(0,3) == 'Re:')
         {
-          console.log("AA");
           document.querySelector('#compose-subject').value = email.subject;
         }
         else{
-          console.log("B")
           document.querySelector('#compose-subject').value = 'Re: ' + email.subject;
         }
         document.querySelector('#compose-recipients').value = email.recipients;
@@ -147,10 +142,7 @@ function load_mailbox(mailbox) {
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
-  // help : https://github.com/kazimovzaman2/CS50w-Mail/blob/main/mail/static/mail/inbox.js
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-
-  console.log("mailbox: " + mailbox)
 
   fetch(`/emails/${mailbox}`)
     .then(response => response.json())
@@ -160,33 +152,41 @@ function load_mailbox(mailbox) {
         document.querySelector('#emails-view').innerHTML = document.querySelector('#emails-view').innerHTML  + "No mails to display"
       }
       else {
-      const entire_table = document.createElement('table');
-      entire_table.className = 'mail_table';
+        //Mail table building
+      const mail_table = document.createElement('table');
+      mail_table.className = 'mail_table';
+      const mail_table_body = document.createElement('tbody');
+      mail_table.appendChild(mail_table_body)
 
         for (let i = 0; i < emails.length ; i++) {
-          console.log(emails[i])
-          const mel = emails[i];  
+          //Rows
+          const mel = emails[i];
+          const mel_data = [mel.sender, mel.subject, mel.timestamp]
           
-          const single_mail = document.createElement('tr');
-          single_mail.className = 'mail_line';
+          const mail_table_row = document.createElement('tr');
+          mail_table_row.className = 'mail_table_row';
 
-          single_mail.innerHTML = 
-            `<td><b> ${mel.sender}</b></td>
-            <td> ${mel.subject}</td>
-            <td> ${mel.timestamp}</td>
-            `
-          entire_table.appendChild(single_mail)
+          mel_data.forEach(item => {
+            //Cells
+            const mail_table_cell = document.createElement('td');
+            mail_table_cell.textContent = item
+            mail_table_cell.className = 'mail_table_cell';
+            mail_table_row.appendChild(mail_table_cell)
+          });
+
+          mail_table_body.appendChild(mail_table_row)
 
           if (mel.read) {
-            single_mail.className = "read"
+            mail_table_row.className = "read"
           };
 
-          single_mail.addEventListener('click', function() {
+          mail_table_row.addEventListener('click', function() {
             view_mail(mel.id)
           })
 
-          document.querySelector('#emails-view').append(entire_table);
+          document.querySelector('#emails-view').append(mail_table);
         }
+         
       }
     }
   )

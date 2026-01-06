@@ -7,9 +7,27 @@ textarea {
 }
 
 .mail_table{
-    border: 1px solid;
+    border: 3px solid;
 }
 
-.mail_line{
-    background-color: blue;
+.mail_table_row{
 }
+
+.mail_table_cell{
+    padding:10px;
+    border-bottom: 1px solid;
+}
+
+
+.mail_table_cell:nth-child(1){
+    width:20%;
+}
+
+.mail_table_cell:nth-child(2){
+    width:50%;
+}
+
+.mail_table_cell:nth-child(3){
+    width:15%;
+}
+
