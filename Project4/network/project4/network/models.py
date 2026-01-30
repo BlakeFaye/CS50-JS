@@ -10,4 +10,9 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=True)
 
-    #TODO : Serialize pour timestamp ?
+    def serialize(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+        }

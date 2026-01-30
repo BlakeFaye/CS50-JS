@@ -1,13 +1,29 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Post
 
 
 def index(request):
+
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    data = json.loads(request.body)
+    content = data.get("content", "")
+
+    print("coucou1")
+    post = Post(
+        content = content
+    )
+    post.save()
+    print("coucou")
+
     return render(request, "network/index.html")
 
 
