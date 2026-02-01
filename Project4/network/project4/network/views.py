@@ -1,31 +1,39 @@
 import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import User, Post
 
+def all_posts(request):
+    return render(request, "network/all_posts.html")
 
 def index(request):
+    return render(request, "network/index.html")
 
+@csrf_exempt
+@login_required
+def add_post(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
     
     data = json.loads(request.body)
     content = data.get("content", "")
+    user = request.user
 
-    print("coucou1")
     post = Post(
+        user=user,
         content = content
     )
     post.save()
-    print("coucou")
 
-    return render(request, "network/index.html")
-
+    return JsonResponse({"message": "Post created successfully."}, status=201)
 
 def login_view(request):
     if request.method == "POST":
