@@ -1,0 +1,33 @@
+textarea {
+    min-height: 400px;
+}
+
+.read {
+    background-color: lightgray;
+}
+
+.post_table{
+    border: 3px solid;
+}
+
+.post_table_row{
+}
+
+.post_table_cell{
+    padding:10px;
+    border-bottom: 1px solid;
+}
+
+
+.post_table_cell:nth-child(1){
+    width:20%;
+}
+
+.post_table_cell:nth-child(2){
+    width:50%;
+}
+
+.post_table_cell:nth-child(3){
+    width:15%;
+}
+

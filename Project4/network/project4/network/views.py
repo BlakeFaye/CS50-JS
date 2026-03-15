@@ -100,3 +100,6 @@ def all_posts_data(request):
     posts = Post.objects
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
+
+# https://stackoverflow.com/questions/46619473/django-how-do-you-get-field-from-another-model-in-a-view
+
