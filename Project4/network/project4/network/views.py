@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Post
+from .models import User, Post, Like
 
 def all_posts(request):
     return render(request, "network/all_posts.html")
@@ -101,5 +101,12 @@ def all_posts_data(request):
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
 
-# https://stackoverflow.com/questions/46619473/django-how-do-you-get-field-from-another-model-in-a-view
+def like_post(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    user = User.objects.get(pk=request.user)
+    postLike = Like(post=post, user=user)
+    postLike.save()
+    
+    return JsonResponse({"message": "Like saved successfully."}, status=201)
 
+# https://stackoverflow.com/questions/46619473/django-how-do-you-get-field-from-another-model-in-a-view
