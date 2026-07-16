@@ -10,9 +10,11 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("all_posts", views.all_posts, name="all_posts"),
 
-    #API
+    #Tools
     path("add_post", views.add_post, name="add_post"),
-    path("post/<int:post_id>", views.post, name = "post"),
     path("like_post/<int:post_id>", views.post, name = "post"),
+
+    #API
+    path("post/<int:post_id>", views.post, name = "post"),
     path("all_posts_data", views.all_posts_data, name="all_posts_data"),
 ]
