@@ -22,6 +22,9 @@ class Like(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="which_post_is_liked")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_liked_a_post")
 
+    class Meta:
+        unique_together = (('post', 'user'))
+
     def serialize(self):
         return {
             "id": self.id,

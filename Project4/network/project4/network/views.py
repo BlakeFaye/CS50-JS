@@ -101,12 +101,26 @@ def all_posts_data(request):
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
 
+def all_posts_likes(request):
+    likes = Like.objects
+    likes = likes.order_by("-id").all()
+    return JsonResponse([like.serialize() for like in likes], safe=False)
+
 def like_post(request, post_id):
     post = Post.objects.get(pk=post_id)
-    user = User.objects.get(pk=request.user)
+    user = request.user
     postLike = Like(post=post, user=user)
     postLike.save()
     
     return JsonResponse({"message": "Like saved successfully."}, status=201)
+
+
+def total_likes(request, post_id):
+    total_likes = Like.objects.filter(post = post_id).count()
+    return JsonResponse({
+        "post_id" : post_id,
+        "total_likes" : total_likes
+    })
+    
 
 # https://stackoverflow.com/questions/46619473/django-how-do-you-get-field-from-another-model-in-a-view

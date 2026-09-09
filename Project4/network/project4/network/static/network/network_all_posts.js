@@ -34,15 +34,25 @@ function load_posts(){
                 //display post actions in a row
                 const post_action = document.createElement('td');
 
+                //like counter
+                const like_counter = document.createElement('td');
+                fetch(`/total_likes/${single_post.id}`)
+                .then(response => response.json())
+                .then(single_like_counter => {
+                    like_counter.innerHTML = `Likes: ${single_like_counter.total_likes}`
+                })
+                               
+                post_action.appendChild(like_counter)
+
                 //like logic
                 const like_button = document.createElement('button');
                 like_button.innerHTML = "Like this post";
-                console.log(single_post.id)
-                 like_button.addEventListener('click', function() {
-                 fetch(`/like_post/${single_post.id}`)
+                like_button.addEventListener('click', function() {
+                    fetch(`/like_post/${single_post.id}`)
+                    .then(response => response.json)
+                    .then(result => console.log(result))
                 })
-                // .then(response => response.json)
-                // .then(result => console.log(result))
+               
                 post_action.appendChild(like_button)
 
                 //post edit logic
