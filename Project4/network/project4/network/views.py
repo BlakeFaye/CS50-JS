@@ -107,12 +107,23 @@ def all_posts_likes(request):
     return JsonResponse([like.serialize() for like in likes], safe=False)
 
 def like_post(request, post_id):
+    total_likes = Like.objects.filter(post = post_id).count()
+
+    # Retrieve post data
     post = Post.objects.get(pk=post_id)
     user = request.user
-    postLike = Like(post=post, user=user)
-    postLike.save()
+
+    # If like then unlike and the other way around
+    if total_likes > 0:
+        print("IF")
+        postLike = Like.objects.get(post=post, user=user)
+        postLike.delete()
+    else:    
+        print("ELSE")
+        postLike = Like(post=post, user=user)
+        postLike.save()
     
-    return JsonResponse({"message": "Like saved successfully."}, status=201)
+    return JsonResponse({"message": "Post like switched successfully."}, status=201)
 
 
 def total_likes(request, post_id):
