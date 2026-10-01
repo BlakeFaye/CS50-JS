@@ -23,7 +23,7 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 
   // Compose mail
-  // Adblockers must be unabled for the composition form to work
+  // Adblockers must be disabled for the composition form to work
   document.querySelector('#submit-compose-form').onclick = () => {
     const new_mail_recipients = document.querySelector('#compose-recipients').value;
     const new_mail_subject = document.querySelector('#compose-subject').value;

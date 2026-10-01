@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
+    new_post();
     load_posts();
 });
+
+function new_post(){
+    document.querySelector('#submit-new-post').onclick = () => {
+    const post_content = document.querySelector('#new-post-body').value;
+
+    fetch('/add_post',{
+      method: "POST",
+      body: JSON.stringify({
+        post_content: post_content
+      })
+    })
+    .then(response => response.json())
+    .then(result => load_posts())
+    };
+}
 
 function load_posts(){
 
@@ -13,11 +29,10 @@ function load_posts(){
             const post_table_body = document.createElement('tbody');
             post_table.appendChild(post_table_body)
 
-            for (let i = 1; i < posts.length; i++)
+            for (let i = 0; i < posts.length; i++)
             {
                 const single_post = posts[i]
                 const single_post_data = [single_post.content, single_post.user, single_post.timestamp]
-                console.log(single_post_data)
 
                 const post_table_row = document.createElement('tr');
                 post_table_row.className = 'mail_table_row';
@@ -34,24 +49,22 @@ function load_posts(){
                 //display post actions in a row
                 const post_action = document.createElement('td');
 
-                //Like logic
+                //Like count and like buttons displays
                 const like_counter = document.createElement('td');
                 const like_button = document.createElement('button');
                 function update_like_display(){
-                    fetch(`/total_likes/${single_post.id}`)
+                    fetch(`/get_post_likes/${single_post.id}`)
                     .then(response => response.json())
                     .then(single_like_counter => {
                         // Like counter and button text
                         const like_counter_value = single_like_counter.total_likes
-                        console.log(like_counter_value, single_post)
+                        const user_liked_post = single_like_counter.user_liked_post
                         like_counter.innerHTML = `Likes: ${like_counter_value}`
 
-                        if (like_counter_value > 0) {
-                            console.log("UNLIKE")
+                        if (user_liked_post) {
                             like_button.innerHTML = "Unlike this post";
                         }
                         else {
-                            console.log("LIKE")
                             like_button.innerHTML = "Like this post";
                         }
                         post_action.appendChild(like_counter)
@@ -59,18 +72,30 @@ function load_posts(){
                 }
                 update_like_display();
                                             
-                // Like logic              
+                // Like button logic              
                 like_button.addEventListener('click', function() {
                     fetch(`/like_post/${single_post.id}`)
-                    .then(response => response.json)
-                    .then(result => update_like_display())                    
+                    .then(response => response.json())
+                    .then(result => update_like_display())               
                 })
                
                 post_action.appendChild(like_button)
 
-                //post edit logic
+                // Post edit button logic
                 const edit_button = document.createElement('button');
                 edit_button.innerHTML = "Edit this post";
+                edit_button.addEventListener('click', function() {
+                    console.log("coucou")
+                    fetch(`/edit_post/`,{
+                    method: "PUT",
+                    body: JSON.stringify({
+                        post_id: single_post.id,
+                    })
+                    })
+                    .then(response => console.log(response.json))            
+                })
+               
+
                 post_action.appendChild(edit_button)
 
                 post_table_row.appendChild(post_action)

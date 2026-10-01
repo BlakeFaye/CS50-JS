@@ -22,14 +22,14 @@ def index(request):
 def add_post(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
-    
+
     data = json.loads(request.body)
-    content = data.get("content", "")
+    post_content = data.get("post_content", "")
     user = request.user
 
     post = Post(
         user=user,
-        content = content
+        content = post_content
     )
     post.save()
 
@@ -107,31 +107,55 @@ def all_posts_likes(request):
     return JsonResponse([like.serialize() for like in likes], safe=False)
 
 def like_post(request, post_id):
-    total_likes = Like.objects.filter(post = post_id).count()
-
     # Retrieve post data
     post = Post.objects.get(pk=post_id)
     user = request.user
-
-    # If like then unlike and the other way around
-    if total_likes > 0:
-        print("IF")
+    
+    # Like/unlike logic
+    try:
+        #user already liked this post
         postLike = Like.objects.get(post=post, user=user)
         postLike.delete()
-    else:    
-        print("ELSE")
+
+    except Like.DoesNotExist:
+        #user hasn't liked this post
         postLike = Like(post=post, user=user)
         postLike.save()
+
+    return JsonResponse({"message": "Post like switched successfully."}, 
+                         status=201)
+
+
+def get_post_likes(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    user = request.user
     
-    return JsonResponse({"message": "Post like switched successfully."}, status=201)
-
-
-def total_likes(request, post_id):
     total_likes = Like.objects.filter(post = post_id).count()
+    user_liked_post = False
+
+    try:
+        postLike = Like.objects.get(post=post, user=user)
+        user_liked_post = True
+
+    except Like.DoesNotExist:
+        user_liked_post = False
+
     return JsonResponse({
         "post_id" : post_id,
-        "total_likes" : total_likes
+        "total_likes" : total_likes,
+        "user_liked_post": user_liked_post
     })
-    
+
+def edit_post(request, post_id):
+    message = "POSTTTT"
+    return JsonResponse({"message": message})
+
+def get_user(request):
+    pass
+    # current_user = User.objects.get(username=request.user)
+    # print(current_user)
+    # return JsonResponse({
+    #         "current_user" : current_user
+    #     })
 
 # https://stackoverflow.com/questions/46619473/django-how-do-you-get-field-from-another-model-in-a-view
