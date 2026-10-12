@@ -32,12 +32,19 @@ function load_posts(){
             for (let i = 0; i < posts.length; i++)
             {
                 const single_post = posts[i]
-                const single_post_data = [single_post.content, single_post.user, single_post.timestamp]
+                var single_post_content = single_post.content 
+                const single_post_data = [single_post.user, single_post.timestamp]
 
                 const post_table_row = document.createElement('tr');
                 post_table_row.className = 'mail_table_row';
+
+                //display post content in 1st column (which can be changed to textarea if edited)
+                const post_table_first_cell = document.createElement('td');
+                post_table_first_cell.textContent = single_post_content
+                post_table_first_cell.className = 'post_table_cell';
+                post_table_row.appendChild(post_table_first_cell)
                 
-                //display post details in a row
+                //display other post details in a row
                 single_post_data.forEach(item => {
                     //Cells
                     const post_table_cell = document.createElement('td');
@@ -85,14 +92,25 @@ function load_posts(){
                 const edit_button = document.createElement('button');
                 edit_button.innerHTML = "Edit this post";
                 edit_button.addEventListener('click', function() {
-                    console.log("coucou")
-                    fetch(`/edit_post/`,{
-                    method: "PUT",
-                    body: JSON.stringify({
-                        post_id: single_post.id,
-                    })
-                    })
-                    .then(response => console.log(response.json))            
+                    console.log("coucou!!")
+                    console.log(single_post.content)
+                    previous_post_content = single_post.content
+                    post_table_first_cell.innerHTML = `
+                    <textarea  rows="5" cols="40">${previous_post_content}</textarea>
+                    <button type="submit">Save this post!</button>
+                    <button type="button">Cancel</button>
+
+                    `
+
+            
+
+                    // fetch(`/edit_post/`,{
+                    // method: "PUT",
+                    // body: JSON.stringify({
+                    //     post_id: single_post.id,
+                    // })
+                    // })
+                    // .then(response => console.log(response.json))            
                 })
                
 

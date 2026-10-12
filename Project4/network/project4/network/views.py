@@ -125,7 +125,6 @@ def like_post(request, post_id):
     return JsonResponse({"message": "Post like switched successfully."}, 
                          status=201)
 
-
 def get_post_likes(request, post_id):
     post = Post.objects.get(pk=post_id)
     user = request.user
