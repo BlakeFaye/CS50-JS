@@ -40,11 +40,11 @@ function load_posts(){
 
                 //display post content in 1st column (which can be changed to textarea if edited)
                 const post_table_first_cell = document.createElement('td');
-                post_table_first_cell.textContent = single_post_content
-                post_table_first_cell.className = 'post_table_cell';
-                post_table_row.appendChild(post_table_first_cell)
-                
-                //display other post details in a row
+                    post_table_first_cell.textContent = single_post_content
+                    post_table_first_cell.className = 'post_table_cell';
+                    post_table_row.appendChild(post_table_first_cell)
+
+                //display other post details in rows
                 single_post_data.forEach(item => {
                     //Cells
                     const post_table_cell = document.createElement('td');
@@ -92,15 +92,23 @@ function load_posts(){
                 const edit_button = document.createElement('button');
                 edit_button.innerHTML = "Edit this post";
                 edit_button.addEventListener('click', function() {
-                    console.log("coucou!!")
-                    console.log(single_post.content)
                     previous_post_content = single_post.content
                     post_table_first_cell.innerHTML = `
                     <textarea  rows="5" cols="40">${previous_post_content}</textarea>
-                    <button type="submit">Save this post!</button>
-                    <button type="button">Cancel</button>
-
+                    <button id ="edit_post_submit_button" type="submit">Save this post!</button>
+                    <button id ="edit_post_cancel_button" type="submit">Cancel</button>
                     `
+
+                    // Cancel post edit logic
+                    edit_post_cancel_button.addEventListener('click', function() {
+                        console.log("cancel post edit")
+                        post_table_first_cell.innerHTML = `${single_post.content}`
+                    })
+
+                    // Save post edit logic
+                    edit_post_submit_button.addEventListener('click', function() {
+                        console.log("post edit")
+                    })
 
             
 
