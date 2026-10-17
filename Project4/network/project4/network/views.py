@@ -99,7 +99,11 @@ def post(request, post_id):
 def all_posts_data(request):
     posts = Post.objects
     posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    print(request.user)
+    current_user = str(request.user)
+    # return JsonResponse([post.serialize() for post in posts], safe=False)
+    return JsonResponse({'all_posts':[post.serialize() for post in posts],
+                         'current_user': current_user}, safe=False)
 
 def all_posts_likes(request):
     likes = Like.objects

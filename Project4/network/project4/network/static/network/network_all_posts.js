@@ -22,8 +22,11 @@ function load_posts(){
 
   fetch(`/all_posts_data`)
     .then(response => response.json())
-    .then(posts =>
+    .then(all_posts =>
         {
+            const posts = all_posts.all_posts
+            const current_user = all_posts.current_user
+
             const post_table = document.createElement('table');
             post_table.className = 'post_table';
             const post_table_body = document.createElement('tbody');
@@ -89,40 +92,37 @@ function load_posts(){
                 post_action.appendChild(like_button)
 
                 // Post edit button logic
-                const edit_button = document.createElement('button');
-                edit_button.innerHTML = "Edit this post";
-                edit_button.addEventListener('click', function() {
-                    previous_post_content = single_post.content
-                    post_table_first_cell.innerHTML = `
-                    <textarea  rows="5" cols="40">${previous_post_content}</textarea>
-                    <button id ="edit_post_submit_button" type="submit">Save this post!</button>
-                    <button id ="edit_post_cancel_button" type="submit">Cancel</button>
-                    `
 
-                    // Cancel post edit logic
-                    edit_post_cancel_button.addEventListener('click', function() {
-                        console.log("cancel post edit")
-                        post_table_first_cell.innerHTML = `${single_post.content}`
+                if (current_user == single_post.user){
+                    const edit_button = document.createElement('button');
+                    edit_button.innerHTML = "Edit this post";
+                    edit_button.addEventListener('click', function() {
+                        console.log(single_post.content)
+                        previous_post_content = single_post.content
+                        post_table_first_cell.innerHTML = `
+                        <textarea  rows="5" cols="40">${previous_post_content}</textarea>
+                        <button id ="edit_post_submit_button${i}" type="submit">Save this post!</button>
+                        <button id ="edit_post_cancel_button${i}" type="submit">Cancel</button>
+                        `
+                        // Cancel post edit logic
+                        var button_cancel_id = "edit_post_cancel_button" + i
+                        document.getElementById(button_cancel_id).addEventListener('click', function() {
+                            console.log("cancel post edit")
+                            post_table_first_cell.innerHTML = `${single_post.content}`
+                        })
+
+                        var button_submit_id = "edit_post_submit_button" + i    
+                        // Save post edit logic
+                        document.getElementById(button_submit_id).addEventListener('click', function() {
+                            console.log(current_user)
+                            console.log(single_post.user)
+                        })
+                        
+        
                     })
-
-                    // Save post edit logic
-                    edit_post_submit_button.addEventListener('click', function() {
-                        console.log("post edit")
-                    })
-
-            
-
-                    // fetch(`/edit_post/`,{
-                    // method: "PUT",
-                    // body: JSON.stringify({
-                    //     post_id: single_post.id,
-                    // })
-                    // })
-                    // .then(response => console.log(response.json))            
-                })
-               
-
-                post_action.appendChild(edit_button)
+                
+                    post_action.appendChild(edit_button)
+                }
 
                 post_table_row.appendChild(post_action)
 
